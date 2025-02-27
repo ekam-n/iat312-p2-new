@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
     private bool facingRight = true; // Track player direction
+    private bool isFirstFrame = true; // Track if it's the first frame
 
     void Start()
     {
@@ -20,6 +21,13 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // Prevent firing on the first frame
+        if (isFirstFrame)
+        {
+            isFirstFrame = false;
+            return; // Exit early if it's the first frame of the game
+        }
+
         // Movement (Left/Right) - Supports Arrow Keys and A/D
         float moveInput = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
