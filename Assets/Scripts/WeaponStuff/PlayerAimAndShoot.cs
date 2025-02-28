@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -7,16 +8,19 @@ public class PlayerAimAndShoot : MonoBehaviour
     [SerializeField] private GameObject gun;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject flame;
+    [SerializeField] private GameObject bomb;
 
     [SerializeField] private Transform bulletSpawnPoint;
 
     private GameObject bulletInst;
 
-    private Vector2 worldPos;
+    public Vector2 worldPos;
     private Vector2 direction;
+    
     private float angle;
     private float timer = 0f;
-    private float interval = 0.25f;
+    private float bulletInterval = 0.25f;
+    private float flameInterval = 0.015f;
 
 
 
@@ -27,7 +31,7 @@ public class PlayerAimAndShoot : MonoBehaviour
 
     }
 
-    private void GunRot()
+    public void GunRot()
     {
         worldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         direction = (worldPos - (Vector2)gun.transform.position).normalized;
@@ -58,7 +62,7 @@ public class PlayerAimAndShoot : MonoBehaviour
         else if (Mouse.current.leftButton.isPressed)
         {
             timer += Time.deltaTime;
-            if (timer >= interval)
+            if (timer >= bulletInterval)
             {
                 timer = 0f;
                 bulletInst = Instantiate(bullet, bulletSpawnPoint.position, gun.transform.rotation);
@@ -66,11 +70,25 @@ public class PlayerAimAndShoot : MonoBehaviour
 
         }
 
-        if (Mouse.current.rightButton.isPressed)
+        if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             bulletInst = Instantiate(flame, bulletSpawnPoint.position, gun.transform.rotation);
         }
 
+        else if (Mouse.current.rightButton.isPressed)
+        {
+            timer += Time.deltaTime;
+            if (timer >= flameInterval)
+            {
+                timer = 0f;
+                bulletInst = Instantiate(flame, bulletSpawnPoint.position, gun.transform.rotation);
+            }
+        }
+
+        if (Keyboard.current.leftShiftKey.wasPressedThisFrame)
+        {
+            bulletInst = Instantiate(bomb, bulletSpawnPoint.position, gun.transform.rotation);
+        }
 
     }
 

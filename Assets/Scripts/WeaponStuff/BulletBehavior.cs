@@ -4,14 +4,21 @@ public class BulletBehaviour : MonoBehaviour
 {
     [SerializeField] private float normalBulletSpeed = 15f;
     [SerializeField] private float flameBulletSpeed = 0f;
+    [SerializeField] private float bombBulletSpeed = 15f;
+
     [SerializeField] private float normalDestroyTime = 3f;
     [SerializeField] private float flameDestroyTime = 0.03f;
+    [SerializeField] private float bombDestroyTime = 5f;
+
+    [SerializeField] private float bombPhysicsValue = 3f;
+
     [SerializeField] private LayerMask whatDestroysBullets;
 
     public enum BulletType
     {
         bullet,
-        flame
+        flame,
+        bomb
     }
 
     public BulletType bulletType;
@@ -22,7 +29,7 @@ public class BulletBehaviour : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         SetDestroyTime();
-
+        SetRBStats();
         InitializeBulletStats();
     }
 
@@ -36,6 +43,11 @@ public class BulletBehaviour : MonoBehaviour
         else if (bulletType == BulletType.flame)
         {
             SetFlameVelocity();
+        }
+
+        else if (bulletType == BulletType.bomb)
+        {
+            SetBombVelocity();
         }
 
     }
@@ -59,6 +71,11 @@ public class BulletBehaviour : MonoBehaviour
         rb.linearVelocity = transform.right * flameBulletSpeed;
     }
 
+    private void SetBombVelocity()
+    {
+        rb.linearVelocity = transform.right * bombBulletSpeed;
+    }
+
     private void SetDestroyTime()
     {
         if (bulletType == BulletType.bullet)
@@ -69,6 +86,29 @@ public class BulletBehaviour : MonoBehaviour
         else if (bulletType == BulletType.flame)
         {
             Destroy(gameObject, flameDestroyTime);
+        }
+
+        else if (bulletType == BulletType.bomb)
+        {
+            Destroy(gameObject, bombDestroyTime);
+        }
+    }
+
+    private void SetRBStats()
+    {
+        if (bulletType == BulletType.bullet)
+        {
+            rb.gravityScale = 0f;
+        }
+
+        else if (bulletType == BulletType.flame)
+        {
+            rb.gravityScale = 0f;
+        }
+
+        else if (bulletType == BulletType.bomb)
+        {
+            rb.gravityScale = bombPhysicsValue;
         }
     }
 }
