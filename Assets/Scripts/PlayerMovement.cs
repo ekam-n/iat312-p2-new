@@ -4,15 +4,17 @@ public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float jumpForce = 10f;
-    public GameObject projectilePrefab;  // Assign projectile prefab in Unity
-    public Transform firePoint; // Empty GameObject to set projectile spawn point
-    public float fireRate = 0.5f; // Time between shots
+    public GameObject projectilePrefab;
+    public Transform firePoint;
+    public float fireRate = 0.5f;
     private float nextFireTime = 0f;
-    
+
     private Rigidbody2D rb;
     private bool isGrounded;
-    private bool facingRight = true; // Track player direction
-    private bool isFirstFrame = true; // Track if it's the first frame
+    private bool facingRight = true;
+    private bool isFirstFrame = true;
+    
+    private bool hasWeapon = false; // Player starts without a weapon
 
     void Start()
     {
@@ -20,71 +22,59 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Update()
-{
-    // Prevent firing on the first frame
-    if (isFirstFrame)
     {
-        isFirstFrame = false;
-        return; // Exit early if it's the first frame of the game
-    }
+        if (isFirstFrame)
+        {
+            isFirstFrame = false;
+            return;
+        }
 
-    // Movement (Left/Right) - Supports Arrow Keys and A/D
-    float moveInput = Input.GetAxisRaw("Horizontal");
-    rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+        float moveInput = Input.GetAxisRaw("Horizontal");
+        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
-    // Flip player sprite if moving left/right
-    if (moveInput > 0) {
-        facingRight = true;
-        transform.localScale = new Vector3(1, 1, 1); // Reset scale
-    }
-    else if (moveInput < 0) {
-        facingRight = false;
-        transform.localScale = new Vector3(-1, 1, 1); // Flip horizontally
-    }
+        if (moveInput > 0) {
+            facingRight = true;
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (moveInput < 0) {
+            facingRight = false;
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
 
-    // Jumping
-    if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
-    {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-    }
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        }
 
-    // **Shooting with Left Mouse Click**
-    if (Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
-    {
-        nextFireTime = Time.time + fireRate;
-        Shoot();
+        // **Only shoot if the player has picked up the weapon**
+        if (hasWeapon && Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
+        {
+            nextFireTime = Time.time + fireRate;
+            Shoot();
+        }
     }
-}
 
     void Shoot()
-{
-    if (projectilePrefab == null)
     {
-        Debug.LogError("Projectile Prefab is not assigned in the Inspector.");
-        return;
+        if (projectilePrefab == null)
+        {
+            Debug.LogError("Projectile Prefab is not assigned in the Inspector.");
+            return;
+        }
+
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0f;
+        Vector2 shootDirection = (mousePosition - firePoint.position).normalized;
+        float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
+
+        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0, 0, angle - 90));
+
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.SetDirection(shootDirection);
+        }
     }
-
-    // Get the mouse position in world space
-    Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    mousePosition.z = 0f; // Ensure no depth issues in 2D
-
-    // Calculate direction from firePoint to mouse
-    Vector2 shootDirection = (mousePosition - firePoint.position).normalized;
-
-    // Calculate the rotation angle (ensure the projectile is properly aligned)
-    float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
-
-    // Instantiate the projectile and apply rotation
-    GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0, 0, angle - 90)); // Adjust for capsule orientation
-
-    // Pass the direction to the projectile
-    Projectile projectileScript = projectile.GetComponent<Projectile>();
-    if (projectileScript != null)
-    {
-        projectileScript.SetDirection(shootDirection);
-    }
-}
-
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -99,6 +89,16 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+        }
+    }
+
+    // **Weapon Pickup Trigger**
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("TranquilizerPickUp"))
+        {
+            hasWeapon = true;
+            Destroy(collision.gameObject); // Remove the weapon pickup
         }
     }
 }
