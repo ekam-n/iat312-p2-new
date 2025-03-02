@@ -20,41 +20,41 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Update()
+{
+    // Prevent firing on the first frame
+    if (isFirstFrame)
     {
-        // Prevent firing on the first frame
-        if (isFirstFrame)
-        {
-            isFirstFrame = false;
-            return; // Exit early if it's the first frame of the game
-        }
-
-        // Movement (Left/Right) - Supports Arrow Keys and A/D
-        float moveInput = Input.GetAxisRaw("Horizontal");
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
-
-        // Flip player sprite if moving left/right
-        if (moveInput > 0) {
-            facingRight = true;
-            transform.localScale = new Vector3(1, 1, 1); // Reset scale
-        }
-        else if (moveInput < 0) {
-            facingRight = false;
-            transform.localScale = new Vector3(-1, 1, 1); // Flip horizontally
-        }
-
-        // Jumping
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-        }
-
-        // Shooting - Ensure continuous firing with correct fire rate
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + fireRate;
-            Shoot();
-        }
+        isFirstFrame = false;
+        return; // Exit early if it's the first frame of the game
     }
+
+    // Movement (Left/Right) - Supports Arrow Keys and A/D
+    float moveInput = Input.GetAxisRaw("Horizontal");
+    rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+
+    // Flip player sprite if moving left/right
+    if (moveInput > 0) {
+        facingRight = true;
+        transform.localScale = new Vector3(1, 1, 1); // Reset scale
+    }
+    else if (moveInput < 0) {
+        facingRight = false;
+        transform.localScale = new Vector3(-1, 1, 1); // Flip horizontally
+    }
+
+    // Jumping
+    if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+    }
+
+    // **Shooting with Left Mouse Click**
+    if (Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
+    {
+        nextFireTime = Time.time + fireRate;
+        Shoot();
+    }
+}
 
     void Shoot()
     {
