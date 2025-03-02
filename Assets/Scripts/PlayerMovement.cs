@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     private float nextFireTime = 0f;
 
     private Rigidbody2D rb;
+    private Animator anim;
+    private SpriteRenderer spriteRenderer; // ✅ Reference to SpriteRenderer
     private bool isGrounded;
     private bool facingRight = true;
     private bool isFirstFrame = true;
@@ -19,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>(); // ✅ Get SpriteRenderer Component
     }
 
     void Update()
@@ -44,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
         if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            // anim.SetTrigger("Jump");
         }
 
         // **Only shoot if the player has picked up the weapon**
@@ -81,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            anim.SetBool("isGrounded", true);
         }
     }
 
@@ -89,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            anim.SetBool("isGrounded", false);
         }
     }
 
