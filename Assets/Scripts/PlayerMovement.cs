@@ -57,27 +57,34 @@ public class PlayerMovement : MonoBehaviour
 }
 
     void Shoot()
+{
+    if (projectilePrefab == null)
     {
-        // Check if the projectilePrefab is assigned
-        if (projectilePrefab == null)
-        {
-            Debug.LogError("Projectile Prefab is not assigned in the Inspector.");
-            return;
-        }
-
-        // Instantiate the projectile at the fire point
-        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-
-        // Set projectile direction based on player's facing direction
-        Projectile projectileScript = projectile.GetComponent<Projectile>();
-        if (projectileScript != null)
-        {
-            projectileScript.SetDirection(facingRight ? 1 : -1); // 1 for right, -1 for left
-        }
-
-        // Rotate the projectile by 90 degrees (if required)
-        projectile.transform.Rotate(0, 0, 90); // Rotate 90 degrees on the Z-axis
+        Debug.LogError("Projectile Prefab is not assigned in the Inspector.");
+        return;
     }
+
+    // Get the mouse position in world space
+    Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    mousePosition.z = 0f; // Ensure no depth issues in 2D
+
+    // Calculate direction from firePoint to mouse
+    Vector2 shootDirection = (mousePosition - firePoint.position).normalized;
+
+    // Calculate the rotation angle (ensure the projectile is properly aligned)
+    float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
+
+    // Instantiate the projectile and apply rotation
+    GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0, 0, angle - 90)); // Adjust for capsule orientation
+
+    // Pass the direction to the projectile
+    Projectile projectileScript = projectile.GetComponent<Projectile>();
+    if (projectileScript != null)
+    {
+        projectileScript.SetDirection(shootDirection);
+    }
+}
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

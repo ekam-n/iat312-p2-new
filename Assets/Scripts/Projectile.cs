@@ -2,47 +2,39 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed = 10f; // Speed of the projectile
-    public float lifetime = 5f; // Time before the projectile is destroyed
-    public float paralysisDuration = 3f; // Duration of paralysis
-    private int direction = 1; // Default direction (right)
+    public float speed = 10f;
+    public float lifetime = 5f;
+    public float paralysisDuration = 3f;
+    private Vector2 direction;
     private Rigidbody2D rb;
 
     void Start()
     {
-        // Set up Rigidbody2D and ensure no gravity affects the projectile
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0; // Prevent gravity from affecting the projectile
-
-        // Destroy the projectile after a set lifetime
         Destroy(gameObject, lifetime);
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // Move the projectile in the specified direction using Rigidbody2D
-        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y); // Only move horizontally
+        rb.linearVelocity = direction * speed; // Move in the assigned direction
     }
 
-    // Method to set the direction of the projectile (1 for right, -1 for left)
-    public void SetDirection(int direction)
+    // Method to set the direction of the projectile
+    public void SetDirection(Vector2 newDirection)
     {
-        this.direction = direction;
+        direction = newDirection.normalized; // Ensure unit direction
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // Check if the projectile collides with an enemy
         if (collision.CompareTag("Enemy"))
         {
-            // Paralyze the enemy
             EnemyController enemy = collision.GetComponent<EnemyController>();
             if (enemy != null)
             {
                 enemy.Paralyze(paralysisDuration);
             }
-
-            // Destroy the projectile
             Destroy(gameObject);
         }
     }
