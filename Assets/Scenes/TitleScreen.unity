@@ -183,7 +183,7 @@ MonoBehaviour:
 
 
     Attack:
-    Left click to shoot fireball, right click to shoot flamethrower
+    Left Click to shoot fireball, Right Click to shoot flamethrower, Shift for molotov
 
 '
   m_isRightToLeft: 0
