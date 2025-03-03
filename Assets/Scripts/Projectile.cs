@@ -2,28 +2,31 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed = 10f;
-    public float lifetime = 5f;
-    public float paralysisDuration = 3f;
-    private Vector2 direction;
-    private Rigidbody2D rb;
+    public float speed = 200f; // Increased speed
+    public float lifetime = 5f; // Time before the projectile is destroyed
+    public float paralysisDuration = 3f; // How long enemies are paralyzed
+    private Vector2 direction; // Direction of projectile movement
+    private Rigidbody2D rb; // Reference to Rigidbody2D component
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0; // Prevent gravity from affecting the projectile
-        Destroy(gameObject, lifetime);
+        Destroy(gameObject, lifetime); // Destroy the projectile after a set time
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = direction * speed; // Move in the assigned direction
+        // Apply velocity in the direction the projectile is moving
+        rb.linearVelocity = direction * 3*speed;
+        Debug.Log("Projectile Speed: " + rb.linearVelocity.magnitude); // Debug speed
     }
 
     // Method to set the direction of the projectile
     public void SetDirection(Vector2 newDirection)
     {
-        direction = newDirection.normalized;
+        direction = newDirection.normalized; // Normalize to ensure uniform speed
+        rb.linearVelocity = direction * speed; // Apply velocity immediately
 
         // Rotate the projectile to face the direction of movement
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -37,9 +40,9 @@ public class Projectile : MonoBehaviour
             EnemyController enemy = collision.GetComponent<EnemyController>();
             if (enemy != null)
             {
-                enemy.Paralyze(paralysisDuration);
+                enemy.Paralyze(paralysisDuration); // Apply paralysis to the enemy
             }
-            Destroy(gameObject);
+            Destroy(gameObject); // Destroy the projectile on impact with an enemy
         }
     }
 }

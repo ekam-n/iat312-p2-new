@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyController : MonoBehaviour
 {
-    public float speed = 3f; // Speed of movement
+    public float speed = 8f; // Speed of movement
     public float moveDistance = 3f; // How far up/down to move
 
     private Rigidbody2D rb;
