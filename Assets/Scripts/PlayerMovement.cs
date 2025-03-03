@@ -11,69 +11,58 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
-    private SpriteRenderer spriteRenderer; // ✅ Reference to SpriteRenderer
+    private SpriteRenderer spriteRenderer;
     private bool isGrounded;
     private bool facingRight = true;
     private bool isFirstFrame = true;
-    
-    private bool hasWeapon = false; // Player starts without a weapon
+    private bool hasWeapon = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>(); // ✅ Get SpriteRenderer Component
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update()
-{
-    if (isFirstFrame)
     {
-        isFirstFrame = false;
-        return;
-    }
+        if (isFirstFrame)
+        {
+            isFirstFrame = false;
+            return;
+        }
 
-    float moveInput = Input.GetAxisRaw("Horizontal");
-    rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+        float moveInput = Input.GetAxisRaw("Horizontal");
+        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
-    // ✅ Ensure isMoving updates every frame
-    bool isMoving = Mathf.Abs(moveInput) > 0.01f;
-    anim.SetBool("isMoving", isMoving);
-
-    // ✅ Prevent running animation from overriding the jump
-    if (isGrounded)
-    {
+        bool isMoving = Mathf.Abs(moveInput) > 0.01f;
         anim.SetBool("isMoving", isMoving);
+
+        if (moveInput > 0)
+        {
+            facingRight = true;
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (moveInput < 0)
+        {
+            facingRight = false;
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            anim.SetTrigger("Jump");
+            isGrounded = false;
+            anim.SetBool("isMoving", false);
+        }
+
+        if (hasWeapon && Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
+        {
+            nextFireTime = Time.time + fireRate;
+            Shoot();
+        }
     }
-
-    if (moveInput > 0)
-    {
-        facingRight = true;
-        transform.localScale = new Vector3(1, 1, 1);
-    }
-    else if (moveInput < 0)
-    {
-        facingRight = false;
-        transform.localScale = new Vector3(-1, 1, 1);
-    }
-
-    if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
-    {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-        anim.SetTrigger("Jump");
-        isGrounded = false;
-        anim.SetBool("isMoving", false); // ✅ Stop running animation when jumping
-    }
-
-    if (hasWeapon && Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
-    {
-        nextFireTime = Time.time + fireRate;
-        Shoot();
-    }
-}
-
-
-
 
     void Shoot()
     {
@@ -83,13 +72,20 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        // Get mouse position in world coordinates
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0f;
+
+        // Calculate direction from firePoint to mouse position
         Vector2 shootDirection = (mousePosition - firePoint.position).normalized;
+
+        // Calculate the angle for rotation
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
 
-        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0, 0, angle - 90));
+        // Instantiate the projectile with the correct rotation
+        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.Euler(0, 0, angle));
 
+        // Set the projectile's direction
         Projectile projectileScript = projectile.GetComponent<Projectile>();
         if (projectileScript != null)
         {
@@ -98,22 +94,18 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
-{
-    if (collision.gameObject.CompareTag("Ground"))
     {
-        isGrounded = true;
-        anim.SetBool("isGrounded", true);
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+            anim.SetBool("isGrounded", true);
+            anim.ResetTrigger("Jump");
 
-        // ✅ Reset "Jump" trigger so it doesn't block transitions
-        anim.ResetTrigger("Jump");
-
-        // ✅ Update "isMoving" immediately to avoid getting stuck in Idle
-        float moveInput = Input.GetAxisRaw("Horizontal");
-        bool isMoving = Mathf.Abs(moveInput) > 0.01f;
-        anim.SetBool("isMoving", isMoving);
+            float moveInput = Input.GetAxisRaw("Horizontal");
+            bool isMoving = Mathf.Abs(moveInput) > 0.01f;
+            anim.SetBool("isMoving", isMoving);
+        }
     }
-}
-
 
     private void OnCollisionExit2D(Collision2D collision)
     {
@@ -124,13 +116,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // **Weapon Pickup Trigger**
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("TranquilizerPickUp"))
         {
             hasWeapon = true;
-            Destroy(collision.gameObject); // Remove the weapon pickup
+            Destroy(collision.gameObject);
         }
     }
 }

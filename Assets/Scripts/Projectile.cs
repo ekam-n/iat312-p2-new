@@ -23,7 +23,11 @@ public class Projectile : MonoBehaviour
     // Method to set the direction of the projectile
     public void SetDirection(Vector2 newDirection)
     {
-        direction = newDirection.normalized; // Ensure unit direction
+        direction = newDirection.normalized;
+
+        // Rotate the projectile to face the direction of movement
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
