@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour
     void FixedUpdate()
     {
         // Apply velocity in the direction the projectile is moving
-        rb.linearVelocity = direction * 3*speed;
+        rb.linearVelocity = direction * 4*speed;
         Debug.Log("Projectile Speed: " + rb.linearVelocity.magnitude); // Debug speed
     }
 
