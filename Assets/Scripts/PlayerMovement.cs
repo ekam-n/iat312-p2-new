@@ -26,38 +26,54 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Update()
+{
+    if (isFirstFrame)
     {
-        if (isFirstFrame)
-        {
-            isFirstFrame = false;
-            return;
-        }
-
-        float moveInput = Input.GetAxisRaw("Horizontal");
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
-
-        if (moveInput > 0) {
-            facingRight = true;
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (moveInput < 0) {
-            facingRight = false;
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            // anim.SetTrigger("Jump");
-        }
-
-        // **Only shoot if the player has picked up the weapon**
-        if (hasWeapon && Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + fireRate;
-            Shoot();
-        }
+        isFirstFrame = false;
+        return;
     }
+
+    float moveInput = Input.GetAxisRaw("Horizontal");
+    rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+
+    // ✅ Ensure isMoving updates every frame
+    bool isMoving = Mathf.Abs(moveInput) > 0.01f;
+    anim.SetBool("isMoving", isMoving);
+
+    // ✅ Prevent running animation from overriding the jump
+    if (isGrounded)
+    {
+        anim.SetBool("isMoving", isMoving);
+    }
+
+    if (moveInput > 0)
+    {
+        facingRight = true;
+        transform.localScale = new Vector3(1, 1, 1);
+    }
+    else if (moveInput < 0)
+    {
+        facingRight = false;
+        transform.localScale = new Vector3(-1, 1, 1);
+    }
+
+    if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        anim.SetTrigger("Jump");
+        isGrounded = false;
+        anim.SetBool("isMoving", false); // ✅ Stop running animation when jumping
+    }
+
+    if (hasWeapon && Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
+    {
+        nextFireTime = Time.time + fireRate;
+        Shoot();
+    }
+}
+
+
+
 
     void Shoot()
     {
@@ -82,13 +98,22 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
+{
+    if (collision.gameObject.CompareTag("Ground"))
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            anim.SetBool("isGrounded", true);
-        }
+        isGrounded = true;
+        anim.SetBool("isGrounded", true);
+
+        // ✅ Reset "Jump" trigger so it doesn't block transitions
+        anim.ResetTrigger("Jump");
+
+        // ✅ Update "isMoving" immediately to avoid getting stuck in Idle
+        float moveInput = Input.GetAxisRaw("Horizontal");
+        bool isMoving = Mathf.Abs(moveInput) > 0.01f;
+        anim.SetBool("isMoving", isMoving);
     }
+}
+
 
     private void OnCollisionExit2D(Collision2D collision)
     {
