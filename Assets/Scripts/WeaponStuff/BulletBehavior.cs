@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class BulletBehaviour : MonoBehaviour
 {
-    [SerializeField] private float normalBulletSpeed = 15f;
-    [SerializeField] private float flameBulletSpeed = 0f;
-    [SerializeField] private float bombBulletSpeed = 15f;
+    [SerializeField] private float normalBulletSpeed = 35f;
+    [SerializeField] private float flameBulletSpeed = 35f;
+    [SerializeField] private float bombBulletSpeed = 35f;
 
     [SerializeField] private float normalDestroyTime = 3f;
     [SerializeField] private float flameDestroyTime = 0.03f;

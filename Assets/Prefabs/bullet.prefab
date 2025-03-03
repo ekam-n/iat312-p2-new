@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 4329656785550442795}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.11, y: 0.58, z: -0.022980414}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalPosition: {x: 0.661, y: 0.518, z: -0.022980414}
+  m_LocalScale: {x: 0.73425, y: 0.73425, z: 1.4685}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -58,7 +58,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -79,12 +79,12 @@ SpriteRenderer:
   m_SortingLayerID: 1839530855
   m_SortingLayer: 2
   m_SortingOrder: 1
-  m_Sprite: {fileID: -7648734065771088865, guid: 8374599f9032d0b43b49a36b80a77c8c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8374599f9032d0b43b49a36b80a77c8c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.9, y: 0.5}
+  m_Size: {x: 8, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -124,8 +124,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 2.7690936e-10, y: 0.0023228843}
-  m_Size: {x: 0.90000015, y: 0.49570444}
+  m_Offset: {x: -0.6309282, y: 0.0023229518}
+  m_Size: {x: 0.9352617, y: 0.4957119}
   m_Direction: 1
 --- !u!50 &-2450664463177537815
 Rigidbody2D:
@@ -166,10 +166,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2411f0cbcd3b1ea458b634ee820108cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalBulletSpeed: 15
+  normalBulletSpeed: 50
   flameBulletSpeed: 0
+  bombBulletSpeed: 15
   normalDestroyTime: 3
   flameDestroyTime: 0.03
+  bombDestroyTime: 5
+  bombPhysicsValue: 3
   whatDestroysBullets:
     serializedVersion: 2
     m_Bits: 0

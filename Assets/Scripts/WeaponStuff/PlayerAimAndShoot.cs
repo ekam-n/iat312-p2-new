@@ -8,6 +8,8 @@ public class PlayerAimAndShoot : MonoBehaviour
     [SerializeField] private GameObject gun;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject flame;
+    [SerializeField] private Vector2 flameOffset; // Adjustable in Inspector
+
     [SerializeField] private GameObject bomb;
 
     [SerializeField] private Transform bulletSpawnPoint;
@@ -31,26 +33,28 @@ public class PlayerAimAndShoot : MonoBehaviour
 
     }
 
-    public void GunRot()
-    {
+   public void GunRot()
+   {
         worldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         direction = (worldPos - (Vector2)gun.transform.position).normalized;
         gun.transform.right = direction;
 
         angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
+        // Determine player direction (facing right or left)
+        bool isFacingLeft = angle > 90 || angle < -90;
+
+        // Flip gun sprite when looking left
         Vector3 loScale = new Vector3(0.05f, 0.05f, 1f);
-        if (angle > 90 || angle < -90)
-        {
-            loScale.y *= -1f;
-        }
-        else
-        {
-            loScale.y *= 1f;
-        }
+        loScale.y = isFacingLeft ? -0.05f : 0.05f; // Flip vertically if facing left
 
         gun.transform.localScale = loScale;
+
+        // Adjust gun position so it stays in front of the player
+        float gunOffsetX = isFacingLeft ? -2f : 2f; // Move gun to the left or right
+        gun.transform.localPosition = new Vector3(gunOffsetX, gun.transform.localPosition.y, gun.transform.localPosition.z);
     }
+
 
     private void GunShoot()
     {
@@ -72,7 +76,8 @@ public class PlayerAimAndShoot : MonoBehaviour
 
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
-            bulletInst = Instantiate(flame, bulletSpawnPoint.position, gun.transform.rotation);
+            Vector3 flameSpawnPos = bulletSpawnPoint.position + (gun.transform.right * flameOffset.x) + (gun.transform.up * flameOffset.y);
+            bulletInst = Instantiate(flame, flameSpawnPos, gun.transform.rotation);
         }
 
         else if (Mouse.current.rightButton.isPressed)
@@ -81,7 +86,8 @@ public class PlayerAimAndShoot : MonoBehaviour
             if (timer >= flameInterval)
             {
                 timer = 0f;
-                bulletInst = Instantiate(flame, bulletSpawnPoint.position, gun.transform.rotation);
+                Vector3 flameSpawnPos = bulletSpawnPoint.position + (gun.transform.right * flameOffset.x) + (gun.transform.up * flameOffset.y);
+                bulletInst = Instantiate(flame, flameSpawnPos, gun.transform.rotation);
             }
         }
 
