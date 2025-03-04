@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             isGrounded = false;
             anim.SetBool("isGrounded", false);
-            // anim.SetTrigger("Jumping");
+            anim.SetTrigger("jumpTrigger");
         }
     }
 
@@ -54,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isGrounded = grounded;
             anim.SetBool("isGrounded", isGrounded);
+            anim.ResetTrigger("jumpTrigger");
         }
     }
 
