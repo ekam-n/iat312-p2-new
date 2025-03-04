@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    private float currSpeed = 0f;
     public float jumpForce = 20f;
     private Rigidbody2D rb;
     private Animator anim;
@@ -20,9 +21,10 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         float moveInput = Input.GetAxisRaw("Horizontal"); // Supports A/D and Arrow Keys
-        isMoving = moveInput != 0;
-        anim.SetBool("isMoving", isMoving);
+        currSpeed = Mathf.Abs(rb.linearVelocityX);
+        anim.SetFloat("currSpeed", currSpeed);
         anim.SetBool("isGrounded", isGrounded);
+
 
         // Update Rigidbody movement
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
