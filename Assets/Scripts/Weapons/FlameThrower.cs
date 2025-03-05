@@ -25,6 +25,8 @@ public class Flamethrower : Weapon
         {
             // Instantiate the flame effect and attach it to shootPoint
             flameEffectInstance = Instantiate(flameEffectPrefab, shootPoint.position, Quaternion.identity, shootPoint);
+            flameEffectInstance.transform.localPosition = Vector3.zero;
+
             flameEffectInstance.SetActive(false); // Start deactivated
 
         }
@@ -41,19 +43,17 @@ public class Flamethrower : Weapon
 
     public override void HandleInput()
     {
-        // Left mouse button held: enable and update continuous flame effect
+        // Always update the flamethrower rotation to face the mouse
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        // Manage the flame effect: active only when left mouse is held
         if (Input.GetMouseButton(0))
         {
             if (flameEffectInstance != null && !flameEffectInstance.activeSelf)
                 flameEffectInstance.SetActive(true);
-
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            flameEffectInstance.transform.rotation = Quaternion.Euler(0, 0, angle);
-
-            // Optionally adjust the localScale to reflect flameRange:
-            // flameEffectInstance.transform.localScale = new Vector3(flameRange, 1, 1);
         }
         else
         {
@@ -61,13 +61,14 @@ public class Flamethrower : Weapon
                 flameEffectInstance.SetActive(false);
         }
 
-
-        // Right mouse button pressed: fire a fireball as before
+        // Right mouse button: fire a fireball
         if (Input.GetMouseButtonDown(1))
         {
             ShootFireball();
         }
     }
+
+
 
 void ShootFireball()
     {

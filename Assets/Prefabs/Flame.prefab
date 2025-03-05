@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7388495073259650170}
   - component: {fileID: 8667419368570553496}
   - component: {fileID: 5328854113384726397}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Flame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3562060158191678921}
-  m_BodyType: 2
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

@@ -2,12 +2,25 @@ using UnityEngine;
 
 public class WeaponManager : MonoBehaviour
 {
-    public Weapon currentWeapon;      // Reference to the currently equipped weapon
-    public Transform weaponHolder;    // A child transform on the player where weapons attach
+    public Weapon currentWeapon;      // Currently equipped weapon
+    public Transform weaponHolder;    // The transform where the weapon is attached
+    public SpriteRenderer playerSprite; // Reference to the player's SpriteRenderer to check facing direction
 
     void Update()
     {
-        // If a weapon is equipped, allow it to process input
+        if (playerSprite.flipX)
+        {
+            // Flip the x coordinate to move it to the left.
+            weaponHolder.localPosition = new Vector3(-Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
+        }
+        else
+        {
+            // Ensure it’s positive when facing right.
+            weaponHolder.localPosition = new Vector3(Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
+        }
+
+
+        // Process the weapon's input if one is equipped
         if (currentWeapon != null)
         {
             currentWeapon.HandleInput();

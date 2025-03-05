@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2701122709932161136}
   - component: {fileID: 6932449413494716295}
   - component: {fileID: 5551324337206397307}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Flamethrower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -116,7 +116,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8128795424084981741}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ShootPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
