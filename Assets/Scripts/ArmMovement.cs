@@ -4,15 +4,34 @@ public class ArmMovement : MonoBehaviour
 {
     public SpriteRenderer playerSprite; // Reference to the player's SpriteRenderer to check facing direction
     private SpriteRenderer armSprite;     // Reference to the arm's SpriteRenderer
-    public float angleOffset = 90f;       // Adjust this value based on your sprite's default orientation
+    public float angleOffset = 0f;       // Adjust this value based on your sprite's default orientation
+    public Animator playerAnim;
 
     void Start()
     {
         armSprite = GetComponent<SpriteRenderer>();
+        // playerAnim = parent.GetComponent<Animator>();
     }
 
     void Update()
     {
+
+        // Check if a weapon is held using the player's animator parameter.
+        bool weaponHeld = playerAnim.GetBool("weaponHeld");
+        
+        // Instead of disabling the entire GameObject, disable the arm sprite so Update() keeps running.
+        if (!weaponHeld)
+        {
+            if (armSprite.enabled)
+                armSprite.enabled = false;
+            return;
+        }
+        else
+        {
+            if (!armSprite.enabled)
+                armSprite.enabled = true;
+        }
+
         // Get the arm pivot's world position
         Vector2 armPos = transform.position;
         // Get the mouse position in world coordinates
