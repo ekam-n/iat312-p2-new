@@ -3,46 +3,56 @@ using UnityEngine;
 public class SimpleEnemy : EnemyBase
 {
     [Header("Simple Enemy Settings")]
-    public Transform target;        // Typically the player's transform.
-    public float attackRange = 1f;
-    public float attackCooldown = 2f;
+    public Transform target;         // Typically the player's transform.
+    public float attackCooldown = 2f;  // Time between damage ticks when colliding.
     private float attackTimer;
+    private bool isCollidingWithPlayer = false;
+    private PlayerHealth collidedPlayerHealth;
 
     protected override void Awake()
     {
         base.Awake();
-        // Optionally, if target isn't manually assigned, try to find the player by tag.
-        if(target == null)
+        // If target isn't manually assigned, try to find the player by tag.
+        if (target == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
                 target = playerObj.transform;
         }
+        attackTimer = attackCooldown;
     }
 
     void Update()
     {
-        Patrol();
-
-        attackTimer -= Time.deltaTime;
-        if(target != null && Vector2.Distance(transform.position, target.position) <= attackRange && attackTimer <= 0f)
+        if (isCollidingWithPlayer)
         {
-            PerformAttack();
+            rb.linearVelocity = Vector2.zero; // Stop moving while colliding
+            attackTimer -= Time.deltaTime;
+            if (attackTimer <= 0f)
+            {
+                PerformAttack();
+                attackTimer = attackCooldown;
+            }
+        }
+        else
+        {
+            // Patrol toward the target when not colliding.
+            Patrol();
             attackTimer = attackCooldown;
         }
     }
 
-    // A very basic patrol: simply move toward the target.
+    // Patrol: move toward the target.
     public override void Patrol()
     {
-        if(target != null)
+        if (target != null)
         {
             Vector2 direction = (target.position - transform.position).normalized;
             rb.linearVelocity = direction * moveSpeed;
             
-            // Optionally flip sprite based on movement direction.
+            // Optionally, flip the enemy's sprite based on movement direction.
             SpriteRenderer sr = GetComponent<SpriteRenderer>();
-            if(sr != null)
+            if (sr != null)
             {
                 sr.flipX = (direction.x < 0);
             }
@@ -53,10 +63,43 @@ public class SimpleEnemy : EnemyBase
         }
     }
 
-    // Implement a basic attack.
+    // PerformAttack: deal damage to the player.
     public override void PerformAttack()
     {
-        // This is where you might call a method on the player to reduce their health.
-        Debug.Log("SimpleEnemy attacks for " + damage + " damage.");
+        if (collidedPlayerHealth != null)
+        {
+            collidedPlayerHealth.TakeDamage(damage);
+            Debug.Log("SimpleEnemy attacks for " + damage + " damage.");
+        }
+    }
+
+    // When collision with the player begins.
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        PlayerHealth ph = collision.gameObject.GetComponent<PlayerHealth>();
+        if (ph != null)
+        {
+            isCollidingWithPlayer = true;
+            collidedPlayerHealth = ph;
+            
+            // Immediate first attack
+            PerformAttack();
+            
+            // Reset timer for cooldown-based follow-up attacks
+            attackTimer = attackCooldown;
+        }
+    }
+
+
+    // When collision with the player ends.
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        PlayerHealth ph = collision.gameObject.GetComponent<PlayerHealth>();
+        if (ph != null)
+        {
+            isCollidingWithPlayer = false;
+            collidedPlayerHealth = null;
+            attackTimer = attackCooldown;
+        }
     }
 }
