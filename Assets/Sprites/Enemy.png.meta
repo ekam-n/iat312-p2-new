@@ -103,7 +103,7 @@ TextureImporter:
       name: Enemy_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 8
         y: 0
         width: 655
         height: 660
