@@ -131,12 +131,17 @@ public class Flamethrower : Weapon
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
-
-        GameObject fireball = Instantiate(fireballPrefab, shootPoint.position, Quaternion.identity);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        
+        // Instantiate the fireball with the computed rotation
+        GameObject fireball = Instantiate(fireballPrefab, shootPoint.position, Quaternion.Euler(0, 0, angle));
+        
+        // Optionally, set its velocity
         Rigidbody2D rb = fireball.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
             rb.linearVelocity = direction * fireballSpeed;
         }
     }
+
 }
