@@ -46,8 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e7fa60eb985e4691b23ff07564cdb58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flameEffectPrefab: {fileID: 9028193243430432451, guid: f94a506fc63e942909ef2332a8112d74, type: 3}
-  flameRange: 5
+  flameEffectPrefab: {fileID: 3562060158191678921, guid: f94a506fc63e942909ef2332a8112d74, type: 3}
   fireballPrefab: {fileID: 5783887973846865189, guid: 1c67555389d874fc480f9a548419b68d, type: 3}
   shootPoint: {fileID: 8128795424084981741}
   flameFireRate: 0.1

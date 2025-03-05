@@ -5,7 +5,7 @@ public class Flamethrower : Weapon
     [Header("Projectile Prefabs")]
     [Header("Flame Effect Settings")]
     public GameObject flameEffectPrefab; // Assign your flame effect prefab in the Inspector
-    public float flameRange = 5f;          // Maximum range of the flame
+    // public float flameRange = 5f;          // Maximum range of the flame
     private GameObject flameEffectInstance;
 
     public GameObject fireballPrefab; // Prefab for the fireball projectile
