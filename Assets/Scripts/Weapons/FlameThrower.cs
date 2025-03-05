@@ -44,10 +44,10 @@ public class Flamethrower : Weapon
     public override void HandleInput()
     {
         // Always update the flamethrower rotation to face the mouse
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        // Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        // Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
+        // float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        // transform.rotation = Quaternion.Euler(0, 0, angle);
 
         // Manage the flame effect: active only when left mouse is held
         if (Input.GetMouseButton(0))

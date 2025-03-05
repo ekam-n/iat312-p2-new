@@ -34,16 +34,16 @@ public class WeaponManager : MonoBehaviour
         
         // mouseLeft = mousePos.x < playerPos.x;
 
-        if (playerSprite.flipX)
-        {
-            // Flip the x coordinate to move it to the left.
-            weaponHolder.localPosition = new Vector3(-Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
-        }
-        else
-        {
-            // Ensure it’s positive when facing right.
-            weaponHolder.localPosition = new Vector3(Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
-        }
+        // if (playerSprite.flipX)
+        // {
+        //     // Flip the x coordinate to move it to the left.
+        //     weaponHolder.localPosition = new Vector3(-Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
+        // }
+        // else
+        // {
+        //     // Ensure it’s positive when facing right.
+        //     weaponHolder.localPosition = new Vector3(Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
+        // }
 
 
         // Process the weapon's input if one is equipped
