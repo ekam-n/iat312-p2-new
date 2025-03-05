@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &508037106126971964
+--- !u!1 &3625063469916805443
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7909580336842941900}
-  - component: {fileID: 4275291694387637239}
-  - component: {fileID: 5613206707164585975}
+  - component: {fileID: 2701122709932161136}
+  - component: {fileID: 6932449413494716295}
+  - component: {fileID: 5551324337206397307}
   m_Layer: 0
   m_Name: Flamethrower
   m_TagString: Untagged
@@ -18,47 +18,48 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7909580336842941900
+--- !u!4 &2701122709932161136
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 508037106126971964}
+  m_GameObject: {fileID: 3625063469916805443}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.178011, y: 6.595993, z: -0.22844082}
+  m_LocalPosition: {x: 5.64, y: 3.68, z: -0.22844082}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5477751632233644358}
+  - {fileID: 8128795424084981741}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4275291694387637239
+--- !u!114 &6932449413494716295
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 508037106126971964}
+  m_GameObject: {fileID: 3625063469916805443}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e7fa60eb985e4691b23ff07564cdb58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flamePrefab: {fileID: 9028193243430432451, guid: f94a506fc63e942909ef2332a8112d74, type: 3}
+  flameEffectPrefab: {fileID: 9028193243430432451, guid: f94a506fc63e942909ef2332a8112d74, type: 3}
+  flameRange: 5
   fireballPrefab: {fileID: 5783887973846865189, guid: 1c67555389d874fc480f9a548419b68d, type: 3}
-  shootPoint: {fileID: 0}
+  shootPoint: {fileID: 8128795424084981741}
   flameFireRate: 0.1
   flameSpeed: 5
   fireballSpeed: 10
---- !u!212 &5613206707164585975
+--- !u!212 &5551324337206397307
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 508037106126971964}
+  m_GameObject: {fileID: 3625063469916805443}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -107,7 +108,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &843030702981243367
+--- !u!1 &6360811550386338663
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,26 +116,26 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5477751632233644358}
+  - component: {fileID: 8128795424084981741}
   m_Layer: 0
-  m_Name: shootPoint
+  m_Name: ShootPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5477751632233644358
+--- !u!4 &8128795424084981741
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 843030702981243367}
+  m_GameObject: {fileID: 6360811550386338663}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.45, y: 0.684, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7909580336842941900}
+  m_Father: {fileID: 2701122709932161136}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
