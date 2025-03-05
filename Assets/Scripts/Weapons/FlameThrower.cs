@@ -5,7 +5,6 @@ public class Flamethrower : Weapon
     [Header("Projectile Prefabs")]
     [Header("Flame Effect Settings")]
     public GameObject flameEffectPrefab; // Assign your flame effect prefab in the Inspector
-    // public float flameRange = 5f;          // Maximum range of the flame
     private GameObject flameEffectInstance;
 
     public GameObject fireballPrefab; // Prefab for the fireball projectile
@@ -16,21 +15,33 @@ public class Flamethrower : Weapon
     public float flameSpeed = 5f;       // Speed of the flame projectile
     public float fireballSpeed = 10f;   // Speed of the fireball projectile
 
+    // New: Reference to the player's transform (set in Inspector)
+    public Transform playerTransform;
+
     private float flameTimer;
+
+    // Store original local positions so we can mirror them when needed.
+    private Vector3 originalShootPointLocalPos;
+    private Vector3 originalFlameEffectLocalPos;
 
     public override void OnEquip()
     {
         gameObject.SetActive(true);
+        // Store the shootPoint's original local position.
+        if (shootPoint != null)
+        {
+            originalShootPointLocalPos = shootPoint.localPosition;
+        }
+
         if (flameEffectPrefab != null && flameEffectInstance == null)
         {
             // Instantiate the flame effect and attach it to shootPoint
             flameEffectInstance = Instantiate(flameEffectPrefab, shootPoint.position, Quaternion.identity, shootPoint);
-            // flameEffectInstance.transform.localPosition = Vector3.zero;
+            flameEffectInstance.transform.localPosition = Vector3.zero;
+            // Store its original local position
+            originalFlameEffectLocalPos = flameEffectInstance.transform.localPosition;
             flameEffectInstance.transform.localRotation = Quaternion.identity;
-
-
             flameEffectInstance.SetActive(false); // Start deactivated
-
         }
     }
 
@@ -45,11 +56,63 @@ public class Flamethrower : Weapon
 
     public override void HandleInput()
     {
-        // Manage the flame effect: active only when left mouse is held
+        // Rotate the weapon toward the mouse.
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 weaponPos = transform.position;
+        float angle = Mathf.Atan2(mousePos.y - weaponPos.y, mousePos.x - weaponPos.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        // Determine if the mouse is to the left of the player.
+        bool flipVertically = false;
+        if (playerTransform != null)
+        {
+            if (mousePos.x < playerTransform.position.x)
+                flipVertically = true;
+        }
+
+        // Get the weapon's SpriteRenderer.
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.flipY = flipVertically;
+        }
+
+        // Adjust the local position of shootPoint and flame effect based on flip.
+        if (flipVertically)
+        {
+            // Mirror the y component of the local position.
+            if (shootPoint != null)
+            {
+                shootPoint.localPosition = new Vector3(originalShootPointLocalPos.x, -originalShootPointLocalPos.y, originalShootPointLocalPos.z);
+            }
+            if (flameEffectInstance != null)
+            {
+                flameEffectInstance.transform.localPosition = new Vector3(originalFlameEffectLocalPos.x, -originalFlameEffectLocalPos.y, originalFlameEffectLocalPos.z);
+            }
+        }
+        else
+        {
+            if (shootPoint != null)
+            {
+                shootPoint.localPosition = originalShootPointLocalPos;
+            }
+            if (flameEffectInstance != null)
+            {
+                flameEffectInstance.transform.localPosition = originalFlameEffectLocalPos;
+            }
+        }
+
+        // Manage the flame effect: activate only when left mouse is held.
         if (Input.GetMouseButton(0))
         {
             if (flameEffectInstance != null && !flameEffectInstance.activeSelf)
                 flameEffectInstance.SetActive(true);
+
+            if (flameEffectInstance != null && flameEffectInstance.activeSelf)
+            {
+                // Ensure the flame effect stays aligned with the shootPoint.
+                flameEffectInstance.transform.localRotation = Quaternion.identity;
+            }
         }
         else
         {
@@ -57,16 +120,14 @@ public class Flamethrower : Weapon
                 flameEffectInstance.SetActive(false);
         }
 
-        // Right mouse button: fire a fireball
+        // Right mouse button: fire a fireball.
         if (Input.GetMouseButtonDown(1))
         {
             ShootFireball();
         }
     }
 
-
-
-void ShootFireball()
+    void ShootFireball()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
@@ -77,7 +138,5 @@ void ShootFireball()
         {
             rb.linearVelocity = direction * fireballSpeed;
         }
-        // Optionally, add explosion or damage effects for the fireball.
     }
-
 }
