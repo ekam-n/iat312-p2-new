@@ -1,73 +1,98 @@
 using UnityEngine;
-using TMPro;  // Ensure you have this namespace for TextMeshPro
+using UnityEngine.UI;
+using TMPro;
 using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
-    public GameObject instructionsPanel; // Reference to the instructions panel
-    public TextMeshProUGUI instructionText; // Reference to the TextMeshProUGUI component
+    public GameObject instructionsPanel; // Panel for text instructions
+    public TextMeshProUGUI instructionText; // Text display
+    public GameObject[] instructionImages; // PNG instruction screens
+    public GameObject nextButton; // UI button to proceed
+    private int currentIndex = 0;
 
     void Start()
+{
+    DontDestroyOnLoad(gameObject);
+
+    if (instructionsPanel == null)
+        Debug.LogWarning("Instructions Panel is not assigned in the Inspector!");
+
+    if (instructionText == null)
     {
-        // Ensures the MenuController persists across scenes
-        DontDestroyOnLoad(gameObject);
-
-        // Check if instructionsPanel is not assigned in the Inspector
-        if (instructionsPanel == null)
-        {
-            Debug.LogWarning("Instructions Panel is not assigned in the Inspector!");
-        }
-
-        // Check if instructionText is not assigned
+        instructionText = GameObject.Find("InstructionText")?.GetComponent<TextMeshProUGUI>();
         if (instructionText == null)
-        {
-            // Attempt to find the instructionText by name, but make sure it's not destroyed first
-            instructionText = GameObject.Find("InstructionText")?.GetComponent<TextMeshProUGUI>();
-
-            if (instructionText == null)
-            {
-                Debug.LogError("Instruction TextMeshProUGUI is missing or destroyed!");
-            }
-        }
+            Debug.LogError("Instruction TextMeshProUGUI is missing or destroyed!");
     }
+
+    // Hide all PNG screens at the start
+    foreach (var img in instructionImages)
+    {
+        img.SetActive(false);
+    }
+
+    // Make sure the "Next" button is hidden at the start
+    if (nextButton != null)
+        nextButton.SetActive(false);
+}
+
 
     public void StartGame()
     {
         if (instructionsPanel != null)
         {
-            // Show the instructions panel before starting the game
             instructionsPanel.SetActive(true);
         }
         else
         {
             Debug.LogError("Instructions Panel is missing!");
         }
-
-    
     }
 
     public void CloseInstructions()
+{
+    if (instructionsPanel != null)
     {
-        if (instructionsPanel != null)
-        {
-            // Close the instructions panel and load the game scene
-            instructionsPanel.SetActive(false);
-            SceneManager.LoadScene("GameScene"); // Replace with your actual scene name
-        }
-        else
-        {
-            Debug.LogError("Instructions Panel is missing!");
-        }
+        instructionsPanel.SetActive(false);
 
-        // Ensure instructionText is valid before using it
-        if (instructionText != null)
+        // Show first PNG instruction screen
+        if (instructionImages.Length > 0)
         {
-            // Example: Reset instructions text after closing the panel
-            instructionText.text = "";
+            instructionImages[0].SetActive(true);
+            currentIndex = 0;
+
+            // Show "Next" button only AFTER instructions are closed
+            if (nextButton != null)
+                nextButton.SetActive(true);
         }
         else
         {
-            Debug.LogError("Instruction TextMeshProUGUI is missing!");
+            // If no images exist, go directly to the game
+            SceneManager.LoadScene("GameScene");
+        }
+    }
+    else
+    {
+        Debug.LogError("Instructions Panel is missing!");
+    }
+
+    if (instructionText != null)
+        instructionText.text = "";
+}
+
+
+    public void NextScreen()
+    {
+        if (currentIndex < instructionImages.Length - 1)
+        {
+            instructionImages[currentIndex].SetActive(false);
+            currentIndex++;
+            instructionImages[currentIndex].SetActive(true);
+        }
+        else
+        {
+            // After last screen, load the game
+            SceneManager.LoadScene("GameScene");
         }
     }
 
@@ -75,23 +100,15 @@ public class MenuController : MonoBehaviour
     {
         if (instructionsPanel != null)
         {
-            instructionsPanel.SetActive(true); // Show the panel
+            instructionsPanel.SetActive(true);
         }
         else
         {
             Debug.LogError("Instructions Panel is missing!");
         }
 
-        // Ensure instructionText is valid before using it
         if (instructionText != null)
-        {
-            // Example: Set instructions text when opening the panel
             instructionText.text = "Here are the game instructions!";
-        }
-        else
-        {
-            Debug.LogError("Instruction TextMeshProUGUI is missing!");
-        }
     }
 
     public void QuitGame()
