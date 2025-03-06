@@ -17,10 +17,10 @@ public class ArmMovement : MonoBehaviour
     {
 
         // Check if a weapon is held using the player's animator parameter.
-        bool weaponHeld = playerAnim.GetBool("weaponHeld");
+        bool flamethrowerHeld = playerAnim.GetBool("flamethrowerHeld");
         
         // Instead of disabling the entire GameObject, disable the arm sprite so Update() keeps running.
-        if (!weaponHeld)
+        if (!flamethrowerHeld)
         {
             if (armSprite.enabled)
                 armSprite.enabled = false;

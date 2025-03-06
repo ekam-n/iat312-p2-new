@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; 
 
 public abstract class EnemyBase : MonoBehaviour
 {
@@ -37,4 +38,33 @@ public abstract class EnemyBase : MonoBehaviour
     // Abstract methods that each enemy type must implement.
     public abstract void PerformAttack();
     public abstract void Patrol();
+
+    // New method to put the enemy to sleep (tranquilize).
+    public virtual void Tranquilize(float duration)
+    {
+        StartCoroutine(TranquilizeRoutine(duration));
+    }
+
+    private IEnumerator TranquilizeRoutine(float duration)
+    {
+        // Optionally, play a sleep animation.
+        if (anim != null)
+        {
+            anim.SetBool("isSleeping", true);
+        }
+
+        // Store the original move speed.
+        float originalSpeed = moveSpeed;
+        moveSpeed = 0;  // Disable movement
+
+        // Wait for the duration.
+        yield return new WaitForSeconds(duration);
+
+        // Wake the enemy up.
+        moveSpeed = originalSpeed;
+        if (anim != null)
+        {
+            anim.SetBool("isSleeping", false);
+        }
+    }
 }
