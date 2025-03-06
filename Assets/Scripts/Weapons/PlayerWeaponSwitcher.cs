@@ -4,9 +4,21 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 {
     public WeaponManager weaponManager;      // Assign the WeaponManager from your player in the Inspector
     public Flamethrower flamethrowerPrefab;    // Assign your Flamethrower prefab in the Inspector
-    public BlowDartWeapon blowDartPrefab;      // Assign your BlowDartWeapon prefab in the Inspector.
-    private BlowDartWeapon blowDartInstance;
+    public BlowDartWeapon blowDartPrefab;      // Assign your BlowDartWeapon prefab in the Inspector
+
     private Flamethrower flamethrowerInstance;
+    private BlowDartWeapon blowDartInstance;
+
+    // Public properties to check which weapon is currently equipped.
+    public bool IsFlamethrowerEquipped
+    {
+        get { return weaponManager.currentWeapon is Flamethrower; }
+    }
+
+    public bool IsBlowDartEquipped
+    {
+        get { return weaponManager.currentWeapon is BlowDartWeapon; }
+    }
 
     void Start()
     {
@@ -45,6 +57,12 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             EquipBlowDart();
+        }
+
+        // For debugging, log the currently equipped weapon type.
+        if (weaponManager.currentWeapon != null)
+        {
+            Debug.Log("Equipped weapon: " + weaponManager.currentWeapon.GetType().Name);
         }
     }
 

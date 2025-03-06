@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 959030b1ef7448643a08bfaed5e0dfb7
+guid: f7f673810268df74caf99e281cd3a720
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8671557609540211893
-    second: Blowdart_0
+      213: 5660213369126007256
+    second: blowdart (2)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,9 +49,9 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 900
+  alignment: 9
+  spritePivot: {x: 0.31589139, y: 0.56291324}
+  spritePixelsToUnits: 2500
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Blowdart_0
+      name: blowdart (2)_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 5168
-        height: 1870
+        width: 13003
+        height: 4673
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b4b250a4c4078a780800000000000000
-      internalID: -8671557609540211893
+      spriteID: 8d13ca3f11e1d8e40800000000000000
+      internalID: 5660213369126007256
       vertices: []
       indices: 
       edges: []
@@ -126,7 +126,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Blowdart_0: -8671557609540211893
+      blowdart (2)_0: 5660213369126007256
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
