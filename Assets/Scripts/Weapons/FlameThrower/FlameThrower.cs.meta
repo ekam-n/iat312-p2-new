@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9e7fa60eb985e4691b23ff07564cdb58
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - flameEffectPrefab: {instanceID: 0}
+  - fireballPrefab: {instanceID: 0}
+  - shootPoint: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -24,9 +24,10 @@ public class SimpleEnemy : EnemyBase
 
     void Update()
     {
-        if (isCollidingWithPlayer)
+        // Only attack if colliding with the player and not tranquilized.
+        if (isCollidingWithPlayer && !isTranquilized)
         {
-            rb.linearVelocity = Vector2.zero; // Stop moving while colliding
+            rb.linearVelocity = Vector2.zero; // Stop moving while attacking.
             attackTimer -= Time.deltaTime;
             if (attackTimer <= 0f)
             {
@@ -36,7 +37,7 @@ public class SimpleEnemy : EnemyBase
         }
         else
         {
-            // Patrol toward the target when not colliding.
+            // Resume patrolling when not colliding or if tranquilized.
             Patrol();
             attackTimer = attackCooldown;
         }
@@ -63,9 +64,15 @@ public class SimpleEnemy : EnemyBase
         }
     }
 
-    // PerformAttack: deal damage to the player.
+    // PerformAttack: deal damage to the player if not tranquilized.
     public override void PerformAttack()
     {
+        if (isTranquilized)
+        {
+            Debug.Log("Enemy is tranquilized and cannot attack.");
+            return;
+        }
+
         if (collidedPlayerHealth != null)
         {
             collidedPlayerHealth.TakeDamage(damage);
@@ -82,14 +89,14 @@ public class SimpleEnemy : EnemyBase
             isCollidingWithPlayer = true;
             collidedPlayerHealth = ph;
             
-            // Immediate first attack
-            PerformAttack();
-            
-            // Reset timer for cooldown-based follow-up attacks
-            attackTimer = attackCooldown;
+            // If not tranquilized, perform an immediate attack.
+            if (!isTranquilized)
+            {
+                PerformAttack();
+                attackTimer = attackCooldown;
+            }
         }
     }
-
 
     // When collision with the player ends.
     void OnCollisionExit2D(Collision2D collision)
