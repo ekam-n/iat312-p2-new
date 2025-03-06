@@ -61,8 +61,8 @@
 # =============== #
 # Package Files #
 # =============== #
-/Packages/manifest.json
-/Packages/packages-lock.json
+# /Packages/manifest.json
+# /Packages/packages-lock.json
 # Keep Packages, but ignore unnecessary auto-generated files
 
 # =============== #
