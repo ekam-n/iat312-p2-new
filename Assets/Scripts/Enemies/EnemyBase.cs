@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public abstract class EnemyBase : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected Animator anim;
     protected Rigidbody2D rb;
+    
+    // New flag to track tranquilization status.
+    protected bool isTranquilized = false;
 
     protected virtual void Awake()
     {
@@ -16,7 +20,7 @@ public abstract class EnemyBase : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Call this method to apply damage to the enemy.
+    // Apply damage to the enemy.
     public virtual void TakeDamage(float amount)
     {
         health -= amount;
@@ -26,15 +30,42 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
-    // Common death behavior (can be overridden).
+    // Common death behavior.
     protected virtual void Die()
     {
-        // Optionally play a death animation, disable colliders, etc.
-        // For now, simply destroy the enemy.
         Destroy(gameObject);
     }
 
-    // Abstract methods that each enemy type must implement.
+    // Abstract methods for enemy behavior.
     public abstract void PerformAttack();
     public abstract void Patrol();
+
+    // Tranquilize the enemy (puts it to sleep).
+    public virtual void Tranquilize(float duration)
+    {
+        StartCoroutine(TranquilizeRoutine(duration));
+    }
+
+    private IEnumerator TranquilizeRoutine(float duration)
+    {
+        isTranquilized = true;
+        if (anim != null)
+        {
+            anim.SetBool("isSleeping", true);
+        }
+
+        // Disable movement while tranquilized.
+        float originalSpeed = moveSpeed;
+        moveSpeed = 0;
+
+        yield return new WaitForSeconds(duration);
+
+        // Restore movement and mark enemy as awake.
+        moveSpeed = originalSpeed;
+        if (anim != null)
+        {
+            anim.SetBool("isSleeping", false);
+        }
+        isTranquilized = false;
+    }
 }
