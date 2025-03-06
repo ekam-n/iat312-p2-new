@@ -209,7 +209,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Idle Breathing-Weapon-Reverse_0: 5285246178604022286
+      Idle Breathing-Weapon-Reverse_1: 4462783880965256187
+      Idle Breathing-Weapon-Reverse_2: -6211036238875343491
+      Idle Breathing-Weapon-Reverse_3: 850273854467649801
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
