@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      RunLoop-Weapon-Reverse_0: 3208380354682301475
+      RunLoop-Weapon-Reverse_1: 3493666628926293354
+      RunLoop-Weapon-Reverse_2: -3374784508611252630
+      RunLoop-Weapon-Reverse_3: -6762721005343659716
+      RunLoop-Weapon-Reverse_4: -443541843398553240
+      RunLoop-Weapon-Reverse_5: 5364839664362086732
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

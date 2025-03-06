@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Jump-Weapon-Reverse_0: 905366073168577997
+      Jump-Weapon-Reverse_1: -6106489577924188381
+      Jump-Weapon-Reverse_2: -4013824160364842431
+      Jump-Weapon-Reverse_3: -2418919103869646429
+      Jump-Weapon-Reverse_4: -6833726012843887191
+      Jump-Weapon-Reverse_5: 5242999358495665126
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
