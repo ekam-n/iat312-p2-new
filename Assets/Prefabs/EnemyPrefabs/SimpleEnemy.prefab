@@ -51,6 +51,7 @@ MonoBehaviour:
   moveSpeed: 10
   damage: 10
   target: {fileID: 0}
+  detectionRange: 50
   attackCooldown: 2
 --- !u!70 &9109853138660533821
 CapsuleCollider2D:

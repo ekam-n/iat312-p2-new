@@ -3,7 +3,8 @@ using UnityEngine;
 public class SimpleEnemy : EnemyBase
 {
     [Header("Simple Enemy Settings")]
-    public Transform target;         // Typically the player's transform.
+    public Transform target;           // Typically the player's transform.
+    public float detectionRange = 10f; // The range within which the enemy will move toward the player.
     public float attackCooldown = 2f;  // Time between damage ticks when colliding.
     private float attackTimer;
     private bool isCollidingWithPlayer = false;
@@ -24,10 +25,10 @@ public class SimpleEnemy : EnemyBase
 
     void Update()
     {
-        // Only attack if colliding with the player and not tranquilized.
+        // If colliding with the player and not tranquilized, stop moving and attack.
         if (isCollidingWithPlayer && !isTranquilized)
         {
-            rb.linearVelocity = Vector2.zero; // Stop moving while attacking.
+            rb.linearVelocity = Vector2.zero;
             attackTimer -= Time.deltaTime;
             if (attackTimer <= 0f)
             {
@@ -37,8 +38,23 @@ public class SimpleEnemy : EnemyBase
         }
         else
         {
-            // Resume patrolling when not colliding or if tranquilized.
-            Patrol();
+            // Only move toward the player if they are within detectionRange.
+            if (target != null)
+            {
+                float distance = Vector2.Distance(transform.position, target.position);
+                if (distance <= detectionRange)
+                {
+                    Patrol();
+                }
+                else
+                {
+                    rb.linearVelocity = Vector2.zero;
+                }
+            }
+            else
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
             attackTimer = attackCooldown;
         }
     }
