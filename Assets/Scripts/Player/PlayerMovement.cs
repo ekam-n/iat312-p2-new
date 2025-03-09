@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     private Animator anim;
     private SpriteRenderer spriteRenderer; // reference to SpriteRenderer
     private bool isGrounded;
-
+    public bool isCrouched;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -57,6 +57,20 @@ public class PlayerMovement : MonoBehaviour
             anim.ResetTrigger("jumpTrigger");
         }
     }
+    
+    public void crouch()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            isCrouched = true;
+        }
+
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            isCrouched = false;
+        }
+    }
+
 
     // private void OnCollisionEnter2D(Collision2D collision)
     // {
