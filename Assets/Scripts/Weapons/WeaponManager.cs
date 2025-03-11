@@ -3,8 +3,7 @@ using UnityEngine;
 public class WeaponManager : MonoBehaviour
 {
     public Weapon currentWeapon;      // Currently equipped weapon
-    public Transform flamethrowerHolder;    // The transform where the weapon is attached
-    public Transform blowdartHolder;
+    public Transform weaponHolder;    // The transform where the weapon is attached
     private bool weaponHeld = false; // checks if weapon held
     private bool mouseBehind = false; // checks if mouse is behind player
     public SpriteRenderer playerSprite; // Reference to the player's SpriteRenderer to check facing direction
@@ -32,6 +31,20 @@ public class WeaponManager : MonoBehaviour
             if (mousePos.x < playerPos.x) mouseBehind = true;
             else mouseBehind = false;
         }
+        
+        // mouseLeft = mousePos.x < playerPos.x;
+
+        // if (playerSprite.flipX)
+        // {
+        //     // Flip the x coordinate to move it to the left.
+        //     weaponHolder.localPosition = new Vector3(-Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
+        // }
+        // else
+        // {
+        //     // Ensure it’s positive when facing right.
+        //     weaponHolder.localPosition = new Vector3(Mathf.Abs(weaponHolder.localPosition.x), weaponHolder.localPosition.y, weaponHolder.localPosition.z);
+        // }
+
 
         // Process the weapon's input if one is equipped
         if (currentWeapon != null)
@@ -53,8 +66,8 @@ public class WeaponManager : MonoBehaviour
 
         weaponHeld = true;
         currentWeapon = newWeapon;
-        // currentWeapon.transform.SetParent(flamethrowerHolder);
-        // currentWeapon.transform.localPosition = Vector3.zero;
+        currentWeapon.transform.SetParent(weaponHolder);
+        currentWeapon.transform.localPosition = Vector3.zero;
         currentWeapon.OnEquip();
     }
 

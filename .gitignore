@@ -59,6 +59,12 @@
 # Keep .meta files since Unity requires them for asset tracking
 
 # =============== #
+# Package Files #
+# =============== #
+
+# Keep Packages, but ignore unnecessary auto-generated files
+
+# =============== #
 # Logs and Local Settings #
 # =============== #
 /*.log

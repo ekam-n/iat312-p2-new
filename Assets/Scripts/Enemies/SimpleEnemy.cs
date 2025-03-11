@@ -3,8 +3,7 @@ using UnityEngine;
 public class SimpleEnemy : EnemyBase
 {
     [Header("Simple Enemy Settings")]
-    public Transform target;           // Typically the player's transform.
-    public float detectionRange = 10f; // The range within which the enemy will move toward the player.
+    public Transform target;         // Typically the player's transform.
     public float attackCooldown = 2f;  // Time between damage ticks when colliding.
     private float attackTimer;
     private bool isCollidingWithPlayer = false;
@@ -25,10 +24,9 @@ public class SimpleEnemy : EnemyBase
 
     void Update()
     {
-        // If colliding with the player and not tranquilized, stop moving and attack.
-        if (isCollidingWithPlayer && !isTranquilized)
+        if (isCollidingWithPlayer)
         {
-            rb.linearVelocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero; // Stop moving while colliding
             attackTimer -= Time.deltaTime;
             if (attackTimer <= 0f)
             {
@@ -38,23 +36,8 @@ public class SimpleEnemy : EnemyBase
         }
         else
         {
-            // Only move toward the player if they are within detectionRange.
-            if (target != null)
-            {
-                float distance = Vector2.Distance(transform.position, target.position);
-                if (distance <= detectionRange)
-                {
-                    Patrol();
-                }
-                else
-                {
-                    rb.linearVelocity = Vector2.zero;
-                }
-            }
-            else
-            {
-                rb.linearVelocity = Vector2.zero;
-            }
+            // Patrol toward the target when not colliding.
+            Patrol();
             attackTimer = attackCooldown;
         }
     }
@@ -80,15 +63,9 @@ public class SimpleEnemy : EnemyBase
         }
     }
 
-    // PerformAttack: deal damage to the player if not tranquilized.
+    // PerformAttack: deal damage to the player.
     public override void PerformAttack()
     {
-        if (isTranquilized)
-        {
-            Debug.Log("Enemy is tranquilized and cannot attack.");
-            return;
-        }
-
         if (collidedPlayerHealth != null)
         {
             collidedPlayerHealth.TakeDamage(damage);
@@ -105,14 +82,14 @@ public class SimpleEnemy : EnemyBase
             isCollidingWithPlayer = true;
             collidedPlayerHealth = ph;
             
-            // If not tranquilized, perform an immediate attack.
-            if (!isTranquilized)
-            {
-                PerformAttack();
-                attackTimer = attackCooldown;
-            }
+            // Immediate first attack
+            PerformAttack();
+            
+            // Reset timer for cooldown-based follow-up attacks
+            attackTimer = attackCooldown;
         }
     }
+
 
     // When collision with the player ends.
     void OnCollisionExit2D(Collision2D collision)
