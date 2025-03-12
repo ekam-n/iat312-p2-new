@@ -1,18 +1,38 @@
 using UnityEngine;
+using System.Collections;
 
 public class SimpleEnemy : EnemyBase
 {
-    [Header("Simple Enemy Settings")]
-    public Transform target;         // Typically the player's transform.
-    public float attackCooldown = 2f;  // Time between damage ticks when colliding.
-    private float attackTimer;
-    private bool isCollidingWithPlayer = false;
+    [Header("Patrol Settings")]
+    public float patrolRange = 5f;    // Half the patrol width.
+    private Vector3 initialPosition;
+    private int patrolDirection = 1;  // 1 = moving right, -1 = moving left.
+
+    [Header("Vision Settings")]
+    public float visionRange = 10f;   // Maximum distance at which the enemy can see the player.
+    public float visionAngle = 45f;   // Half-angle of the vision cone (in degrees).
+    private bool isChasing = false;   // Whether the enemy has detected the player.
+    public float lostSightTimeThreshold = 3f; // Time enemy will chase without seeing the player before giving up.
+    private float lostSightTimer = 0f;         // Timer for how long the enemy hasn't seen the player.
+
+    [Header("Attack Settings")]
+    public float attackCooldown = 2f; // Time between consecutive attacks when colliding.
+    private float attackTimer = 0f;
     private PlayerHealth collidedPlayerHealth;
+
+    [Header("Target")]
+    public Transform target;          // Typically the player's transform.
+
+    [Header("Obstacle Settings")]
+    public LayerMask obstacleMask;    // Layers that block the enemy's vision (e.g., walls, ground).
+
+    // Debug: toggle drawing the vision cone.
+    private bool showVisionCone = false;
 
     protected override void Awake()
     {
         base.Awake();
-        // If target isn't manually assigned, try to find the player by tag.
+        initialPosition = transform.position;
         if (target == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -20,42 +40,121 @@ public class SimpleEnemy : EnemyBase
                 target = playerObj.transform;
         }
         attackTimer = attackCooldown;
+        lostSightTimer = 0f;
     }
 
     void Update()
     {
-        // Only attack if colliding with the player and not tranquilized.
-        if (isCollidingWithPlayer && !isTranquilized)
+        // Toggle vision cone display when V is pressed.
+        if (Input.GetKeyDown(KeyCode.V))
         {
-            rb.linearVelocity = Vector2.zero; // Stop moving while attacking.
-            attackTimer -= Time.deltaTime;
-            if (attackTimer <= 0f)
+            showVisionCone = !showVisionCone;
+        }
+
+        // Vision check with obstacle blocking.
+        if (target != null)
+        {
+            Vector2 toPlayer = target.position - transform.position;
+            if (toPlayer.magnitude <= visionRange)
             {
-                PerformAttack();
-                attackTimer = attackCooldown;
+                // Cast a ray toward the player.
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, toPlayer.normalized, toPlayer.magnitude, obstacleMask);
+                if (hit.collider == null)
+                {
+                    // No obstacle blocking view; now check vision cone.
+                    Vector2 forward = new Vector2(patrolDirection, 0); // enemy's "forward" in patrol mode.
+                    float angleToPlayer = Vector2.Angle(forward, toPlayer);
+                    if (angleToPlayer <= visionAngle)
+                    {
+                        // Player is seen. Reset lostSightTimer.
+                        isChasing = true;
+                        lostSightTimer = 0f;
+                    }
+                    else if (isChasing)
+                    {
+                        lostSightTimer += Time.deltaTime;
+                        if (lostSightTimer >= lostSightTimeThreshold)
+                        {
+                            isChasing = false;
+                            lostSightTimer = 0f;
+                        }
+                    }
+                }
+                else
+                {
+                    // Obstacle detected. If already chasing, increment lost sight timer.
+                    if (isChasing)
+                    {
+                        lostSightTimer += Time.deltaTime;
+                        if (lostSightTimer >= lostSightTimeThreshold)
+                        {
+                            isChasing = false;
+                            lostSightTimer = 0f;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (isChasing)
+                {
+                    lostSightTimer += Time.deltaTime;
+                    if (lostSightTimer >= lostSightTimeThreshold)
+                    {
+                        isChasing = false;
+                        lostSightTimer = 0f;
+                    }
+                }
             }
         }
         else
         {
-            // Resume patrolling when not colliding or if tranquilized.
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        if (isChasing)
+        {
+            // In chase mode, move horizontally toward the player's x position
+            // while preserving vertical velocity so gravity affects the enemy.
+            if (target != null)
+            {
+                float directionX = Mathf.Sign(target.position.x - transform.position.x);
+                rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);
+            }
+            else
+            {
+                rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+            }
+            attackTimer -= Time.deltaTime;
+        }
+        else
+        {
+            // In patrol mode, move left/right within patrol range.
             Patrol();
             attackTimer = attackCooldown;
         }
     }
 
-    // Patrol: move toward the target.
     public override void Patrol()
     {
         if (target != null)
         {
-            Vector2 direction = (target.position - transform.position).normalized;
-            rb.linearVelocity = direction * moveSpeed;
-            
-            // Optionally, flip the enemy's sprite based on movement direction.
+            // Patrol only in x direction.
+            rb.linearVelocity = new Vector2(patrolDirection * moveSpeed, rb.linearVelocity.y);
+            float leftBound = initialPosition.x - patrolRange;
+            float rightBound = initialPosition.x + patrolRange;
+            if (transform.position.x >= rightBound && patrolDirection > 0)
+            {
+                patrolDirection = -1;
+            }
+            else if (transform.position.x <= leftBound && patrolDirection < 0)
+            {
+                patrolDirection = 1;
+            }
             SpriteRenderer sr = GetComponent<SpriteRenderer>();
             if (sr != null)
             {
-                sr.flipX = (direction.x < 0);
+                sr.flipX = (patrolDirection < 0);
             }
         }
         else
@@ -64,7 +163,6 @@ public class SimpleEnemy : EnemyBase
         }
     }
 
-    // PerformAttack: deal damage to the player if not tranquilized.
     public override void PerformAttack()
     {
         if (isTranquilized)
@@ -72,7 +170,6 @@ public class SimpleEnemy : EnemyBase
             Debug.Log("Enemy is tranquilized and cannot attack.");
             return;
         }
-
         if (collidedPlayerHealth != null)
         {
             collidedPlayerHealth.TakeDamage(damage);
@@ -80,16 +177,12 @@ public class SimpleEnemy : EnemyBase
         }
     }
 
-    // When collision with the player begins.
     void OnCollisionEnter2D(Collision2D collision)
     {
         PlayerHealth ph = collision.gameObject.GetComponent<PlayerHealth>();
         if (ph != null)
         {
-            isCollidingWithPlayer = true;
             collidedPlayerHealth = ph;
-            
-            // If not tranquilized, perform an immediate attack.
             if (!isTranquilized)
             {
                 PerformAttack();
@@ -98,15 +191,54 @@ public class SimpleEnemy : EnemyBase
         }
     }
 
-    // When collision with the player ends.
     void OnCollisionExit2D(Collision2D collision)
     {
         PlayerHealth ph = collision.gameObject.GetComponent<PlayerHealth>();
         if (ph != null)
         {
-            isCollidingWithPlayer = false;
             collidedPlayerHealth = null;
             attackTimer = attackCooldown;
+        }
+    }
+
+    // Draw the vision cone for debugging when toggled.
+    void OnDrawGizmos()
+    {
+        if (!Application.isPlaying)
+            return;
+        if (showVisionCone)
+        {
+            Gizmos.color = Color.yellow;
+            Vector3 startPos = transform.position;
+            Vector2 forward;
+            if (!isChasing)
+            {
+                forward = new Vector2(patrolDirection, 0);
+            }
+            else if (target != null)
+            {
+                // When chasing, only consider horizontal direction.
+                forward = new Vector2(Mathf.Sign(target.position.x - transform.position.x), 0);
+            }
+            else
+            {
+                forward = Vector2.right;
+            }
+            Vector2 leftBoundary = Quaternion.Euler(0, 0, -visionAngle) * forward;
+            Vector2 rightBoundary = Quaternion.Euler(0, 0, visionAngle) * forward;
+            Gizmos.DrawLine(startPos, startPos + (Vector3)(leftBoundary.normalized * visionRange));
+            Gizmos.DrawLine(startPos, startPos + (Vector3)(rightBoundary.normalized * visionRange));
+            int segments = 20;
+            Vector3 previousPoint = startPos + (Vector3)(leftBoundary.normalized * visionRange);
+            float totalAngle = visionAngle * 2;
+            for (int i = 1; i <= segments; i++)
+            {
+                float stepAngle = -visionAngle + (totalAngle / segments) * i;
+                Vector2 stepDir = Quaternion.Euler(0, 0, stepAngle) * forward;
+                Vector3 nextPoint = startPos + (Vector3)(stepDir.normalized * visionRange);
+                Gizmos.DrawLine(previousPoint, nextPoint);
+                previousPoint = nextPoint;
+            }
         }
     }
 }
