@@ -3,18 +3,15 @@ using System.Collections;
 
 public class FlyingMeleeEnemy : SimpleEnemy
 {
-    // We override Awake to disable gravity.
+    // Override Awake to disable gravity and store the flying altitude.
     protected override void Awake()
     {
         base.Awake();
-        // Disable gravity so this enemy can fly.
-        rb.gravityScale = 0f;
-        // Store the flying altitude (y) from its starting position.
-        initialPosition = transform.position; 
+        rb.gravityScale = 0f;  // Disable gravity.
+        initialPosition = transform.position; // Use starting position as flying altitude.
     }
 
-    // Override Update to change the chase behavior.
-    // Note: Since SimpleEnemy's Update isn’t virtual, we use "new" to hide it.
+    // Hide the base Update() with a new one.
     new void Update()
     {
         // Toggle vision cone display when V is pressed.
@@ -23,7 +20,7 @@ public class FlyingMeleeEnemy : SimpleEnemy
             showVisionCone = !showVisionCone;
         }
 
-        // Vision check (same as in SimpleEnemy).
+        // Vision check with obstacle blocking.
         if (target != null)
         {
             Vector2 toPlayer = target.position - transform.position;
@@ -32,8 +29,8 @@ public class FlyingMeleeEnemy : SimpleEnemy
                 RaycastHit2D hit = Physics2D.Raycast(transform.position, toPlayer.normalized, toPlayer.magnitude, obstacleMask);
                 if (hit.collider == null)
                 {
-                    // Use patrolDirection as the forward when not chasing.
-                    Vector2 forward = new Vector2(patrolDirection, 0);
+                    // No obstacle blocking view; now check vision cone.
+                    Vector2 forward = new Vector2(patrolDirection, 0); // Enemy's forward in patrol mode.
                     float angleToPlayer = Vector2.Angle(forward, toPlayer);
                     if (angleToPlayer <= visionAngle)
                     {
@@ -87,7 +84,8 @@ public class FlyingMeleeEnemy : SimpleEnemy
             if (target != null)
             {
                 Vector2 direction = (target.position - transform.position).normalized;
-                rb.linearVelocity = direction * moveSpeed;
+                // Multiply by chaseSpeedMultiplier to increase speed.
+                rb.linearVelocity = direction * moveSpeed * chaseSpeedMultiplier;
                 // Flip sprite based on horizontal movement.
                 SpriteRenderer sr = GetComponent<SpriteRenderer>();
                 if (sr != null)
@@ -97,24 +95,24 @@ public class FlyingMeleeEnemy : SimpleEnemy
             }
             else
             {
-                rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+                rb.linearVelocity = Vector2.zero;
             }
             attackTimer -= Time.deltaTime;
         }
         else
         {
-            // In patrol mode, the enemy flies left/right at a fixed altitude.
+            // In patrol mode, fly left/right at a fixed altitude.
             Patrol();
             attackTimer = attackCooldown;
         }
     }
 
-    // Override Patrol so that vertical position remains constant.
+    // Override Patrol so that the enemy maintains its flying altitude.
     public override void Patrol()
     {
         if (target != null)
         {
-            // Move only in x, but maintain the initial y (flying altitude).
+            // Move only in the x direction.
             rb.linearVelocity = new Vector2(patrolDirection * moveSpeed, 0);
             float leftBound = initialPosition.x - patrolRange;
             float rightBound = initialPosition.x + patrolRange;
@@ -131,7 +129,7 @@ public class FlyingMeleeEnemy : SimpleEnemy
             {
                 sr.flipX = (patrolDirection < 0);
             }
-            // Ensure the enemy stays at the flying altitude.
+            // Keep the enemy at its initial flying altitude.
             transform.position = new Vector3(transform.position.x, initialPosition.y, transform.position.z);
         }
         else

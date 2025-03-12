@@ -26,6 +26,10 @@ public class SimpleEnemy : EnemyBase
     [Header("Obstacle Settings")]
     public LayerMask obstacleMask;    // Layers that block the enemy's vision (e.g., walls, ground).
 
+    [Header("Chase Settings")]
+    [Tooltip("Multiplier applied to moveSpeed when chasing the player.")]
+    public float chaseSpeedMultiplier = 1.5f;
+
     // Debug: toggle drawing the vision cone.
     protected bool showVisionCone = false;
 
@@ -119,7 +123,8 @@ public class SimpleEnemy : EnemyBase
             if (target != null)
             {
                 float directionX = Mathf.Sign(target.position.x - transform.position.x);
-                rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);
+                rb.linearVelocity = new Vector2(directionX * moveSpeed * chaseSpeedMultiplier, rb.linearVelocity.y);
+                
                 // Flip sprite based on horizontal direction.
                 SpriteRenderer sr = GetComponent<SpriteRenderer>();
                 if (sr != null)
