@@ -120,6 +120,12 @@ public class SimpleEnemy : EnemyBase
             {
                 float directionX = Mathf.Sign(target.position.x - transform.position.x);
                 rb.linearVelocity = new Vector2(directionX * moveSpeed, rb.linearVelocity.y);
+                // Flip sprite based on horizontal direction.
+                SpriteRenderer sr = GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    sr.flipX = (directionX < 0);
+                }
             }
             else
             {
