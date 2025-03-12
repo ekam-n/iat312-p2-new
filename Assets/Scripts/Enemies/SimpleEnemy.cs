@@ -5,20 +5,20 @@ public class SimpleEnemy : EnemyBase
 {
     [Header("Patrol Settings")]
     public float patrolRange = 5f;    // Half the patrol width.
-    private Vector3 initialPosition;
-    private int patrolDirection = 1;  // 1 = moving right, -1 = moving left.
+    protected Vector3 initialPosition;
+    protected int patrolDirection = 1;  // 1 = moving right, -1 = moving left.
 
     [Header("Vision Settings")]
     public float visionRange = 10f;   // Maximum distance at which the enemy can see the player.
     public float visionAngle = 45f;   // Half-angle of the vision cone (in degrees).
-    private bool isChasing = false;   // Whether the enemy has detected the player.
+    protected bool isChasing = false;   // Whether the enemy has detected the player.
     public float lostSightTimeThreshold = 3f; // Time enemy will chase without seeing the player before giving up.
-    private float lostSightTimer = 0f;         // Timer for how long the enemy hasn't seen the player.
+    protected float lostSightTimer = 0f;         // Timer for how long the enemy hasn't seen the player.
 
     [Header("Attack Settings")]
     public float attackCooldown = 2f; // Time between consecutive attacks when colliding.
-    private float attackTimer = 0f;
-    private PlayerHealth collidedPlayerHealth;
+    protected float attackTimer = 0f;
+    protected PlayerHealth collidedPlayerHealth;
 
     [Header("Target")]
     public Transform target;          // Typically the player's transform.
@@ -27,7 +27,7 @@ public class SimpleEnemy : EnemyBase
     public LayerMask obstacleMask;    // Layers that block the enemy's vision (e.g., walls, ground).
 
     // Debug: toggle drawing the vision cone.
-    private bool showVisionCone = false;
+    protected bool showVisionCone = false;
 
     protected override void Awake()
     {
