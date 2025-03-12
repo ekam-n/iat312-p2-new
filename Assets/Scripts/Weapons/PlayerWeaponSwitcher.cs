@@ -3,11 +3,14 @@ using UnityEngine;
 public class PlayerWeaponSwitcher : MonoBehaviour
 {
     public WeaponManager weaponManager;      // Assign the WeaponManager from your player in the Inspector
-    public Flamethrower flamethrowerPrefab;    // Assign your Flamethrower prefab in the Inspector
-    public BlowDartWeapon blowDartPrefab;      // Assign your BlowDartWeapon prefab in the Inspector
+    public Flamethrower flamethrowerPrefab;  // Assign your Flamethrower prefab in the Inspector
+    public BlowDartWeapon blowDartPrefab;    // Assign your BlowDartWeapon prefab in the Inspector
 
     private Flamethrower flamethrowerInstance;
     private BlowDartWeapon blowDartInstance;
+
+    // Flag to track whether the flamethrower can be equipped
+    private bool canEquipFlamethrower = false;
 
     // Public properties to check which weapon is currently equipped.
     public bool IsFlamethrowerEquipped
@@ -47,8 +50,8 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 
     void Update()
     {
-        // Press F to equip the flamethrower.
-        if (Input.GetKeyDown(KeyCode.F))
+        // Press F to equip the flamethrower, but only if the player can equip it.
+        if (canEquipFlamethrower && Input.GetKeyDown(KeyCode.F))
         {
             EquipFlamethrower();
         }
@@ -73,6 +76,7 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         {
             flamethrowerInstance.gameObject.SetActive(true);
             weaponManager.EquipWeapon(flamethrowerInstance);
+            canEquipFlamethrower = false; // Prevent re-equipping unless another pickup is collected
         }
     }
 
@@ -85,4 +89,20 @@ public class PlayerWeaponSwitcher : MonoBehaviour
             weaponManager.EquipWeapon(blowDartInstance);
         }
     }
+
+    // Collision detection for when the player touches the flamethrower pickup
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Check if the player collided with the flamethrower pickup
+        if (other.CompareTag("FlamethrowerPickup"))
+        {
+            canEquipFlamethrower = true;  // Allow the player to equip the flamethrower
+            Debug.Log("Flamethrower Pickup Collected!");
+
+            // Destroy the pickup object after collection
+            Destroy(other.gameObject);  // This destroys the pickup object
+        }
+    }
+
+    
 }
