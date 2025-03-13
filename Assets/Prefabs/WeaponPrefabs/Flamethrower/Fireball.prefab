@@ -170,6 +170,9 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
+  flyingEnemyLayer:
+    serializedVersion: 2
+    m_Bits: 512
   groundLayer:
     serializedVersion: 2
     m_Bits: 8

@@ -4,6 +4,7 @@ public class FireballCollision : MonoBehaviour
 {
     public float damage = 20f;          // Damage dealt by the fireball
     public LayerMask enemyLayer;        // Set this in the Inspector to the enemy layer(s)
+    public LayerMask flyingEnemyLayer;  // Set this in the Inspector to the flying enemy layer(s)
     public LayerMask groundLayer;       // Set this in the Inspector to the ground layer(s)
 
     void Start()
@@ -15,7 +16,7 @@ public class FireballCollision : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if the collided object's layer is in the enemy layer mask.
-        if (((1 << collision.gameObject.layer) & enemyLayer) != 0)
+        if ((((1 << collision.gameObject.layer) & enemyLayer) != 0) || ((1 << collision.gameObject.layer) & flyingEnemyLayer) != 0)
         {
             EnemyBase enemy = collision.gameObject.GetComponent<EnemyBase>();
             if (enemy != null)
