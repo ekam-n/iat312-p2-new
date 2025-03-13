@@ -1,15 +1,22 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     public float maxHealth = 100f;    // Maximum health for the player
-    private float currentHealth;
+    public float currentHealth;
+    public Image healthBar;
     private Animator anim;            // Optional: to play damage/death animations
 
     void Start()
     {
         currentHealth = maxHealth;
         anim = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        healthBar.fillAmount = Mathf.Clamp(currentHealth / maxHealth, 0, 1);
     }
 
     // Call this method to apply damage to the player.
@@ -27,6 +34,7 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             Die();
+            healthBar.fillAmount = Mathf.Clamp(0 / maxHealth, 0, 1);
         }
     }
 
