@@ -11,6 +11,7 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 
     // Flag to track whether the flamethrower can be equipped
     private bool canEquipFlamethrower = false;
+    private bool isFlamethrowerActive = false; // Track whether the flamethrower is currently equipped
 
     // Public properties to check which weapon is currently equipped.
     public bool IsFlamethrowerEquipped
@@ -50,10 +51,10 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 
     void Update()
     {
-        // Press F to equip the flamethrower, but only if the player can equip it.
+        // Press F to toggle the flamethrower, but only if the player can equip it.
         if (canEquipFlamethrower && Input.GetKeyDown(KeyCode.F))
         {
-            EquipFlamethrower();
+            ToggleFlamethrower();
         }
 
         // Press B to equip the blow dart weapon.
@@ -69,14 +70,21 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         }
     }
 
-    void EquipFlamethrower()
+    void ToggleFlamethrower()
     {
-        // If the flamethrower is not active, activate and equip it.
-        if (flamethrowerInstance != null && !flamethrowerInstance.gameObject.activeInHierarchy)
+        if (flamethrowerInstance != null)
         {
-            flamethrowerInstance.gameObject.SetActive(true);
-            weaponManager.EquipWeapon(flamethrowerInstance);
-            canEquipFlamethrower = false; // Prevent re-equipping unless another pickup is collected
+            isFlamethrowerActive = !isFlamethrowerActive; // Toggle state
+            flamethrowerInstance.gameObject.SetActive(isFlamethrowerActive);
+            
+            if (isFlamethrowerActive)
+            {
+                weaponManager.EquipWeapon(flamethrowerInstance);
+            }
+            else
+            {
+                weaponManager.UnequipWeapon(); // Ensure this method exists to unequip weapons
+            }
         }
     }
 
@@ -103,6 +111,4 @@ public class PlayerWeaponSwitcher : MonoBehaviour
             Destroy(other.gameObject);  // This destroys the pickup object
         }
     }
-
-    
 }
