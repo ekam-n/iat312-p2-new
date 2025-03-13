@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class Flamethrower : Weapon
 {
     [Header("Projectile Prefabs")]
@@ -23,6 +22,8 @@ public class Flamethrower : Weapon
     // Store original local positions so we can mirror them when needed.
     private Vector3 originalShootPointLocalPos;
     private Vector3 originalFlameEffectLocalPos;
+
+    private int fireballAmmo = 0;  // Keep track of fireball ammo
 
     public override void OnEquip()
     {
@@ -120,11 +121,28 @@ public class Flamethrower : Weapon
                 flameEffectInstance.SetActive(false);
         }
 
-        // Right mouse button: fire a fireball.
+        // Right mouse button: fire a fireball if ammo is available.
         if (Input.GetMouseButtonDown(1))
         {
-            ShootFireball();
+            PlayerWeaponSwitcher player = GetComponentInParent<PlayerWeaponSwitcher>();
+
+            if (player != null && player.UseFireball())  // Check ammo in PlayerWeaponSwitcher
+            {
+                ShootFireball();
+                Debug.Log("Fireball shot!");
+            }
+            else
+            {
+                Debug.Log("Out of fireball ammo!");
+            }
         }
+    }
+
+    // AddFireballs method to update ammo count
+    public void AddFireballs(int amount)
+    {
+        fireballAmmo = Mathf.Min(fireballAmmo + amount, 5);  // Max ammo is 5
+        Debug.Log("Picked up fireball ammo! Current count: " + fireballAmmo);
     }
 
     void ShootFireball()
@@ -142,6 +160,8 @@ public class Flamethrower : Weapon
         {
             rb.linearVelocity = direction * fireballSpeed;
         }
-    }
 
+        // Decrease fireball ammo after shooting
+        fireballAmmo--;
+    }
 }
