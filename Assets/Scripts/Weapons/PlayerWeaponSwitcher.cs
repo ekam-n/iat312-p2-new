@@ -122,12 +122,8 @@ public class PlayerWeaponSwitcher : MonoBehaviour
             Destroy(other.gameObject);
         }
 
-        // Handle fireball pickups (example):
-        if (other.CompareTag("FireballAmmoPickup"))
-        {
-            AddFireballs(1); // Add 1 fireball ammo when a pickup is collected
-            Destroy(other.gameObject);
-        }
+
+        
     }
 
     // You can also add a method to get the current fireball count if needed:
