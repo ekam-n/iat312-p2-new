@@ -67,6 +67,11 @@ public class PlayerWeaponSwitcher : MonoBehaviour
             if (isFlamethrowerActive)
             {
                 weaponManager.EquipWeapon(flamethrowerInstance);
+                // If the flamethrower is equipped, pass fireball ammo to the flamethrower instance
+                if (flamethrowerInstance != null)
+                {
+                    flamethrowerInstance.AddFireballs(fireballAmmo); // Pass the current fireball ammo
+                }
             }
             else
             {
@@ -88,11 +93,11 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     {
         fireballAmmo = Mathf.Min(fireballAmmo + amount, maxFireballs);
         Debug.Log("Picked up TikiAmmo! Fireballs: " + fireballAmmo);
-        
+
         // If flamethrower is equipped, update its ammo as well.
         if (IsFlamethrowerEquipped && flamethrowerInstance != null)
         {
-            flamethrowerInstance.AddFireballs(amount); // Add ammo to Flamethrower
+            flamethrowerInstance.AddFireballs(amount); // Update flamethrower's ammo count
         }
     }
 
@@ -101,6 +106,7 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         if (fireballAmmo > 0)
         {
             fireballAmmo--;
+            Debug.Log("Fireball used. Remaining: " + fireballAmmo);
             return true; // Successfully used a fireball
         }
         Debug.Log("Out of fireballs!");
@@ -113,6 +119,13 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         {
             canEquipFlamethrower = true;
             Debug.Log("Flamethrower Pickup Collected!");
+            Destroy(other.gameObject);
+        }
+
+        // Handle fireball pickups (example):
+        if (other.CompareTag("FireballAmmoPickup"))
+        {
+            AddFireballs(1); // Add 1 fireball ammo when a pickup is collected
             Destroy(other.gameObject);
         }
     }

@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class Flamethrower : Weapon
 {
     [Header("Projectile Prefabs")]
@@ -15,10 +14,6 @@ public class Flamethrower : Weapon
     public float flameSpeed = 5f;       // Speed of the flame projectile
     public float fireballSpeed = 10f;   // Speed of the fireball projectile
 
-    [Header("Fireball Ammo System")]
-    public int fireballAmmo = 0;   // Fireballs start at 0
-    public int maxFireballs = 5;   // Max fireball capacity
-
     // New: Reference to the player's transform (set in Inspector)
     public Transform playerTransform;
 
@@ -27,6 +22,8 @@ public class Flamethrower : Weapon
     // Store original local positions so we can mirror them when needed.
     private Vector3 originalShootPointLocalPos;
     private Vector3 originalFlameEffectLocalPos;
+
+    private int fireballAmmo = 0;  // Keep track of fireball ammo
 
     public override void OnEquip()
     {
@@ -127,17 +124,25 @@ public class Flamethrower : Weapon
         // Right mouse button: fire a fireball if ammo is available.
         if (Input.GetMouseButtonDown(1))
         {
-            if (fireballAmmo > 0)
+            PlayerWeaponSwitcher player = GetComponentInParent<PlayerWeaponSwitcher>();
+
+            if (player != null && player.UseFireball())  // Check ammo in PlayerWeaponSwitcher
             {
                 ShootFireball();
-                fireballAmmo--; // Reduce ammo after firing
-                Debug.Log("Fireball shot! Remaining ammo: " + fireballAmmo);
+                Debug.Log("Fireball shot!");
             }
             else
             {
                 Debug.Log("Out of fireball ammo!");
             }
         }
+    }
+
+    // AddFireballs method to update ammo count
+    public void AddFireballs(int amount)
+    {
+        fireballAmmo = Mathf.Min(fireballAmmo + amount, 5);  // Max ammo is 5
+        Debug.Log("Picked up fireball ammo! Current count: " + fireballAmmo);
     }
 
     void ShootFireball()
@@ -155,12 +160,8 @@ public class Flamethrower : Weapon
         {
             rb.linearVelocity = direction * fireballSpeed;
         }
-    }
 
-    // Method to add fireball ammo when picking up TikiAmmo
-    public void AddFireballs(int amount)
-    {
-        fireballAmmo = Mathf.Min(fireballAmmo + amount, maxFireballs);
-        Debug.Log("Picked up fireball ammo! Current count: " + fireballAmmo);
+        // Decrease fireball ammo after shooting
+        fireballAmmo--;
     }
 }

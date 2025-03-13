@@ -11,21 +11,11 @@ public class TikiAmmoPickup : MonoBehaviour
             PlayerWeaponSwitcher player = other.GetComponent<PlayerWeaponSwitcher>();
             if (player != null)
             {
-                // Instead of trying to access a non-existing 'flamethrower' property,
-                // we access the flamethrowerInstance from PlayerWeaponSwitcher.
-                if (player.IsFlamethrowerEquipped && player.flamethrowerInstance != null)
-                {
-                    player.AddFireballs(fireballAmount);
-                    player.flamethrowerInstance.AddFireballs(fireballAmount); // Add fireballs to the flamethrower
-                    Debug.Log("Added fireball ammo to Flamethrower");
-                }
-                else
-                {
-                    player.AddFireballs(fireballAmount); // Add ammo to the player if Flamethrower isn't equipped
-                    Debug.Log("Added fireball ammo to player");
-                }
+                // Add fireballs to the player's ammo
+                player.AddFireballs(fireballAmount);
 
-                Destroy(gameObject); // Destroy the pickup object after collection
+                // Destroy the pickup object
+                Destroy(gameObject); // Destroy the pickup
             }
         }
     }
