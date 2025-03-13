@@ -4,6 +4,7 @@ public class BlowDartProjectile : MonoBehaviour
 {
     public float tranquilizeDuration = 15f;  // Duration the enemy stays asleep.
     public LayerMask enemyLayer;             // Set in the Inspector to the enemy layer.
+    public LayerMask flyingEnemyLayer;             // Set in the Inspector to the flyingEnemy layer.
     public LayerMask groundLayer;            // Set in the Inspector to the ground layer.
     private Rigidbody2D rb;
     private bool hasStuck = false;           // Flag to indicate if the dart has stuck to the ground.
@@ -34,7 +35,7 @@ public class BlowDartProjectile : MonoBehaviour
             return;
 
         // Check if collided with an enemy.
-        if (((1 << other.gameObject.layer) & enemyLayer) != 0)
+        if ((((1 << other.gameObject.layer) & enemyLayer) != 0) || (((1 << other.gameObject.layer) & flyingEnemyLayer) != 0))
         {
             EnemyBase enemy = other.GetComponent<EnemyBase>();
             if (enemy != null)
