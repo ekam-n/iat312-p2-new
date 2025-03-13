@@ -15,6 +15,10 @@ public class Flamethrower : Weapon
     public float flameSpeed = 5f;       // Speed of the flame projectile
     public float fireballSpeed = 10f;   // Speed of the fireball projectile
 
+    [Header("Fireball Ammo System")]
+    public int fireballAmmo = 0;   // Fireballs start at 0
+    public int maxFireballs = 5;   // Max fireball capacity
+
     // New: Reference to the player's transform (set in Inspector)
     public Transform playerTransform;
 
@@ -120,10 +124,19 @@ public class Flamethrower : Weapon
                 flameEffectInstance.SetActive(false);
         }
 
-        // Right mouse button: fire a fireball.
+        // Right mouse button: fire a fireball if ammo is available.
         if (Input.GetMouseButtonDown(1))
         {
-            ShootFireball();
+            if (fireballAmmo > 0)
+            {
+                ShootFireball();
+                fireballAmmo--; // Reduce ammo after firing
+                Debug.Log("Fireball shot! Remaining ammo: " + fireballAmmo);
+            }
+            else
+            {
+                Debug.Log("Out of fireball ammo!");
+            }
         }
     }
 
@@ -144,4 +157,10 @@ public class Flamethrower : Weapon
         }
     }
 
+    // Method to add fireball ammo when picking up TikiAmmo
+    public void AddFireballs(int amount)
+    {
+        fireballAmmo = Mathf.Min(fireballAmmo + amount, maxFireballs);
+        Debug.Log("Picked up fireball ammo! Current count: " + fireballAmmo);
+    }
 }

@@ -2,44 +2,34 @@ using UnityEngine;
 
 public class PlayerWeaponSwitcher : MonoBehaviour
 {
-    public WeaponManager weaponManager;      // Assign the WeaponManager from your player in the Inspector
-    public Flamethrower flamethrowerPrefab;  // Assign your Flamethrower prefab in the Inspector
-    public BlowDartWeapon blowDartPrefab;    // Assign your BlowDartWeapon prefab in the Inspector
+    public WeaponManager weaponManager;
+    public Flamethrower flamethrowerPrefab;
+    public BlowDartWeapon blowDartPrefab;
 
-    private Flamethrower flamethrowerInstance;
+    public Flamethrower flamethrowerInstance;
     private BlowDartWeapon blowDartInstance;
 
-    // Flag to track whether the flamethrower can be equipped
     private bool canEquipFlamethrower = false;
-    private bool isFlamethrowerActive = false; // Track whether the flamethrower is currently equipped
+    private bool isFlamethrowerActive = false;
 
-    // Public properties to check which weapon is currently equipped.
-    public bool IsFlamethrowerEquipped
-    {
-        get { return weaponManager.currentWeapon is Flamethrower; }
-    }
+    private int fireballAmmo = 0; // Start with zero fireballs
+    public int maxFireballs = 5; // Set max fireball capacity
 
-    public bool IsBlowDartEquipped
-    {
-        get { return weaponManager.currentWeapon is BlowDartWeapon; }
-    }
+    public bool IsFlamethrowerEquipped => weaponManager.currentWeapon is Flamethrower;
+    public bool IsBlowDartEquipped => weaponManager.currentWeapon is BlowDartWeapon;
 
     void Start()
     {
-        // Pre-instantiate the flamethrower at the flamethrowerHolder's position,
-        // parent it to the flamethrowerHolder, reset its local transform,
-        // rotate it 90° clockwise, and then deactivate it.
+        // Instantiate flamethrower but keep it inactive
         if (flamethrowerPrefab != null && weaponManager != null)
         {
             flamethrowerInstance = Instantiate(flamethrowerPrefab, weaponManager.flamethrowerHolder.position, Quaternion.identity, weaponManager.flamethrowerHolder);
             flamethrowerInstance.transform.localPosition = Vector3.zero;
-            // Rotate 90 degrees clockwise (i.e., -90 degrees)
             flamethrowerInstance.transform.localRotation = Quaternion.Euler(0, 0, -90);
             flamethrowerInstance.gameObject.SetActive(false);
         }
 
-        // Pre-instantiate the blow dart weapon at the blowdartHolder's position,
-        // parent it to the blowdartHolder, reset its local transform, and then deactivate it.
+        // Instantiate blow dart weapon but keep it inactive
         if (blowDartPrefab != null && weaponManager != null)
         {
             blowDartInstance = Instantiate(blowDartPrefab, weaponManager.blowdartHolder.position, Quaternion.identity, weaponManager.blowdartHolder);
@@ -51,46 +41,42 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 
     void Update()
     {
-        // Press F to toggle the flamethrower, but only if the player can equip it.
+        // Press F to toggle the flamethrower (only if the player has picked it up)
         if (canEquipFlamethrower && Input.GetKeyDown(KeyCode.F))
         {
             ToggleFlamethrower();
         }
 
-        // Press B to equip the blow dart weapon.
+        // Press B to equip the blow dart weapon
         if (Input.GetKeyDown(KeyCode.B))
         {
             EquipBlowDart();
         }
 
-        // For debugging, log the currently equipped weapon type.
-        if (weaponManager.currentWeapon != null)
-        {
-            Debug.Log("Equipped weapon: " + weaponManager.currentWeapon.GetType().Name);
-        }
+        // For debugging, log ammo count
+        Debug.Log("Fireballs: " + fireballAmmo);
     }
 
     void ToggleFlamethrower()
     {
         if (flamethrowerInstance != null)
         {
-            isFlamethrowerActive = !isFlamethrowerActive; // Toggle state
+            isFlamethrowerActive = !isFlamethrowerActive;
             flamethrowerInstance.gameObject.SetActive(isFlamethrowerActive);
-            
+
             if (isFlamethrowerActive)
             {
                 weaponManager.EquipWeapon(flamethrowerInstance);
             }
             else
             {
-                weaponManager.UnequipWeapon(); // Ensure this method exists to unequip weapons
+                weaponManager.UnequipWeapon();
             }
         }
     }
 
     void EquipBlowDart()
     {
-        // If the blow dart weapon is not active, activate and equip it.
         if (blowDartInstance != null && !blowDartInstance.gameObject.activeInHierarchy)
         {
             blowDartInstance.gameObject.SetActive(true);
@@ -98,17 +84,42 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         }
     }
 
-    // Collision detection for when the player touches the flamethrower pickup
+    public void AddFireballs(int amount)
+    {
+        fireballAmmo = Mathf.Min(fireballAmmo + amount, maxFireballs);
+        Debug.Log("Picked up TikiAmmo! Fireballs: " + fireballAmmo);
+        
+        // If flamethrower is equipped, update its ammo as well.
+        if (IsFlamethrowerEquipped && flamethrowerInstance != null)
+        {
+            flamethrowerInstance.AddFireballs(amount); // Add ammo to Flamethrower
+        }
+    }
+
+    public bool UseFireball()
+    {
+        if (fireballAmmo > 0)
+        {
+            fireballAmmo--;
+            return true; // Successfully used a fireball
+        }
+        Debug.Log("Out of fireballs!");
+        return false; // No fireballs left
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Check if the player collided with the flamethrower pickup
         if (other.CompareTag("FlamethrowerPickup"))
         {
-            canEquipFlamethrower = true;  // Allow the player to equip the flamethrower
+            canEquipFlamethrower = true;
             Debug.Log("Flamethrower Pickup Collected!");
-
-            // Destroy the pickup object after collection
-            Destroy(other.gameObject);  // This destroys the pickup object
+            Destroy(other.gameObject);
         }
+    }
+
+    // You can also add a method to get the current fireball count if needed:
+    public int GetFireballAmmo()
+    {
+        return fireballAmmo;
     }
 }
