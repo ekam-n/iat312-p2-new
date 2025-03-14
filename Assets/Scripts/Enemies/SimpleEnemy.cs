@@ -212,6 +212,15 @@ public class SimpleEnemy : EnemyBase
         }
     }
 
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collidedPlayerHealth != null && attackTimer <= 0f)
+        {
+            PerformAttack();
+            attackTimer = attackCooldown;
+        }
+    }
+
     // Draw the vision cone for debugging when toggled.
     void OnDrawGizmos()
     {
