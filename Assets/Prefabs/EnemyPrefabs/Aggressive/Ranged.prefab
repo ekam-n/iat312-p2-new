@@ -217,3 +217,4 @@ MonoBehaviour:
   shootPoint: {fileID: 3596164643822751601}
   shootCooldown: 3
   projectileSpeed: 50
+  shootOffset: {x: 0, y: 0}

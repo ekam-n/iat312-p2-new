@@ -15,7 +15,7 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     private bool isBlowDartActive = false;
 
     private int fireballAmmo = 0; // Start with zero fireballs
-    public int maxFireballs = 5; // Set max fireball capacity
+    public int maxFireballs = 10; // Set max fireball capacity
     
     private int normalDartAmmo = 0; // Start with zero normal darts
     private int poisonDartAmmo = 0; // Start with zero poison darts
