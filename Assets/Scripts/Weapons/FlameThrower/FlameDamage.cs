@@ -3,7 +3,7 @@ using UnityEngine;
 public class FlameDamage : MonoBehaviour
 {
     // Damage applied per second by the flame.
-    public float damagePerSecond = 50f;
+    public float damagePerSecond = 100f;
     // Layer mask for enemy objects.
     public LayerMask enemyLayer;
     public LayerMask flyingEnemyLayer;       // Set this in the Inspector to the ground layer(s)
@@ -13,7 +13,6 @@ public class FlameDamage : MonoBehaviour
     public float slowDuration = 3f;
     [Tooltip("Multiplier applied to enemy speed (e.g., 0.5 for 50% of original).")]
     public float slowMultiplier = 0.5f;
-
     void OnTriggerStay2D(Collider2D other)
     {
         // Check if the collided object is on the enemy layer.
