@@ -7,7 +7,7 @@ public class StationaryEnemy : SimpleEnemy
     [Tooltip("If true, the enemy will face left while stationary if no movement is occurring; otherwise it faces right.")]
     public bool faceLeftByDefault = false;
     [Tooltip("Speed at which the enemy returns to its initial horizontal position when not chasing.")]
-    public float returnSpeed = 2f;
+    public float returnSpeed = 10f;
 
     // Override Patrol so that instead of moving along a patrol route, the enemy returns to its initial horizontal position.
     public override void Patrol()

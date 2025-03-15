@@ -5,7 +5,7 @@ public abstract class EnemyBase : MonoBehaviour
 {
     [Header("Enemy Stats")]
     public float health = 100f;
-    public float moveSpeed = 2f;
+    public float moveSpeed = 10f;
     public int damage = 10;
 
     protected Animator anim;
