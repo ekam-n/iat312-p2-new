@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BlowDartWeapon : Weapon
 {
     public GameObject dartPrefab;         // Assign your dart projectile prefab in the Inspector.
+    public GameObject poisonDartPrefab;
     public Transform shootPoint;          // The point where the dart is spawned.
     public float dartSpeed = 15f;           // Speed of the dart projectile.
     public Transform playerTransform;     // Reference to the player's transform.
@@ -67,6 +69,11 @@ public class BlowDartWeapon : Weapon
         {
             ShootDart();
         }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            ShootPoisonDart();
+        }
     }
 
     void ShootDart()
@@ -76,6 +83,21 @@ public class BlowDartWeapon : Weapon
         float dartAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         // Instantiate the dart with rotation so its forward direction aligns with the shot.
         GameObject dart = Instantiate(dartPrefab, shootPoint.position, Quaternion.Euler(0, 0, dartAngle));
+        Rigidbody2D rb = dart.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = direction * dartSpeed;
+        }
+    }
+
+
+    void ShootPoisonDart()
+    {
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
+        float dartAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        // Instantiate the dart with rotation so its forward direction aligns with the shot.
+        GameObject dart = Instantiate(poisonDartPrefab, shootPoint.position, Quaternion.Euler(0, 0, dartAngle));
         Rigidbody2D rb = dart.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
