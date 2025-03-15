@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Ground
   - FlamethrowerPickup
+  - BlowdartPickup
+  - NormalDartAmmo
+  - PoisonDartAmmo
   layers:
   - Default
   - TransparentFX
