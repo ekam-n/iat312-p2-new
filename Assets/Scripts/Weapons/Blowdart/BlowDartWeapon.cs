@@ -12,6 +12,9 @@ public class BlowDartWeapon : Weapon
     private Vector3 originalShootPointLocalPos;  // To store the original shootPoint local position.
     private SpriteRenderer sr;                   // Weapon's SpriteRenderer reference.
 
+    private int normalDartAmmo = 0;      // Track normal dart ammo
+    private int poisonDartAmmo = 0;      // Track poison dart ammo
+
     public override void OnEquip()
     {
         gameObject.SetActive(true);
@@ -36,7 +39,6 @@ public class BlowDartWeapon : Weapon
         transform.rotation = Quaternion.Euler(0, 0, angle);
 
         // Determine if the mouse is to the left of the player.
-        // Use playerTransform if assigned; otherwise, fallback to the parent's position.
         bool flipVertically = false;
         if (playerTransform != null)
         {
@@ -64,15 +66,28 @@ public class BlowDartWeapon : Weapon
                 shootPoint.localPosition = originalShootPointLocalPos;
         }
 
-        // Fire a dart when left mouse button is pressed.
-        if (Input.GetMouseButtonDown(0))
+        // Fire a normal dart when left mouse button is pressed (if ammo is available)
+        if (Input.GetMouseButtonDown(0) && normalDartAmmo > 0)
         {
             ShootDart();
+            normalDartAmmo--;
+            Debug.Log("Normal dart fired. Remaining: " + normalDartAmmo);
+        }
+        else if (Input.GetMouseButtonDown(0) && normalDartAmmo <= 0)
+        {
+            Debug.Log("Out of normal darts!");
         }
 
-        if (Input.GetMouseButtonDown(1))
+        // Fire a poison dart when right mouse button is pressed (if ammo is available)
+        if (Input.GetMouseButtonDown(1) && poisonDartAmmo > 0)
         {
             ShootPoisonDart();
+            poisonDartAmmo--;
+            Debug.Log("Poison dart fired. Remaining: " + poisonDartAmmo);
+        }
+        else if (Input.GetMouseButtonDown(1) && poisonDartAmmo <= 0)
+        {
+            Debug.Log("Out of poison darts!");
         }
     }
 
@@ -90,7 +105,6 @@ public class BlowDartWeapon : Weapon
         }
     }
 
-
     void ShootPoisonDart()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -103,5 +117,31 @@ public class BlowDartWeapon : Weapon
         {
             rb.linearVelocity = direction * dartSpeed;
         }
+    }
+
+    // Method to add normal dart ammo
+    public void AddNormalDarts(int amount)
+    {
+        normalDartAmmo += amount;
+        Debug.Log("Added " + amount + " normal darts. Total: " + normalDartAmmo);
+    }
+
+    // Method to add poison dart ammo
+    public void AddPoisonDarts(int amount)
+    {
+        poisonDartAmmo += amount;
+        Debug.Log("Added " + amount + " poison darts. Total: " + poisonDartAmmo);
+    }
+
+    // Method to get current normal dart ammo count
+    public int GetNormalDartAmmo()
+    {
+        return normalDartAmmo;
+    }
+
+    // Method to get current poison dart ammo count
+    public int GetPoisonDartAmmo()
+    {
+        return poisonDartAmmo;
     }
 }
