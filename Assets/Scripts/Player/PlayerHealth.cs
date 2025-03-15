@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;  // Add this for Action
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class PlayerHealth : MonoBehaviour
     public float currentHealth;
     public Image healthBar;
     private Animator anim;            // Optional: to play damage/death animations
+    
+    // Add this event for the checkpoint system
+    public event Action OnPlayerDied;
 
     void Start()
     {
@@ -42,8 +46,18 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player died!");
-        // Optionally, play a death animation, disable controls, or reload the scene.
-        // For now, we just destroy the player.
-        Destroy(gameObject);
+        
+        // Invoke the event instead of destroying the player
+        OnPlayerDied?.Invoke();
+        
+        // Disable the player temporarily instead of destroying
+        gameObject.SetActive(false);
+    }
+    
+    // Add this method for the checkpoint system
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+        healthBar.fillAmount = Mathf.Clamp(currentHealth / maxHealth, 0, 1);
     }
 }
