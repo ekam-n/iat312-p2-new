@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 362b73ec176393e48a43f6959cd993bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tranquilizeDuration: 45
+  tranquilizeDuration: 15
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
