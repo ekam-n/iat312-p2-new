@@ -84,8 +84,8 @@ public class FlyingMeleeEnemy : SimpleEnemy
             if (target != null)
             {
                 Vector2 direction = (target.position - transform.position).normalized;
-                // Multiply by chaseSpeedMultiplier to increase speed.
                 rb.linearVelocity = direction * moveSpeed * chaseSpeedMultiplier;
+
                 // Flip sprite based on horizontal movement.
                 SpriteRenderer sr = GetComponent<SpriteRenderer>();
                 if (sr != null)
@@ -97,7 +97,14 @@ public class FlyingMeleeEnemy : SimpleEnemy
             {
                 rb.linearVelocity = Vector2.zero;
             }
+
             attackTimer -= Time.deltaTime;
+
+            if (attackTimer <= 0f)
+            {
+                PerformAttack();
+                attackTimer = attackCooldown; // Reset cooldown after attacking
+            }
         }
         else
         {

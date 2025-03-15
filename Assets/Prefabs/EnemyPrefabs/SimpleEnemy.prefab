@@ -54,7 +54,7 @@ MonoBehaviour:
   visionRange: 33.5
   visionAngle: 32
   lostSightTimeThreshold: 3
-  attackCooldown: 5
+  attackCooldown: 2
   target: {fileID: 0}
   obstacleMask:
     serializedVersion: 2
