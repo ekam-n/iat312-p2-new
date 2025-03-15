@@ -1,31 +1,76 @@
 using UnityEngine;
 using Unity.Cinemachine;
 
-public class ZoneTransitionTrigger : MonoBehaviour
+public class CameraZoneTrigger : MonoBehaviour
 {
     // Reference to the virtual camera for the next zone.
     public CinemachineCamera nextZoneCamera;
     // Reference to the virtual camera for the previous zone.
     public CinemachineCamera previousZoneCamera;
 
-    // Optionally, specify the desired priority values.
-    public int nextZonePriority = 10;
-    public int previousZonePriority = 0;
+    // Desired priorities for when the cameras should be active.
+    public int activePriority = 10;
+    public int inactivePriority = 0;
 
-    void OnTriggerEnter2D(Collider2D other)
+    [Tooltip("If true, reverses the trigger behavior. Exiting left will activate the previous zone camera and exiting right will activate the next zone camera.")]
+    public bool reverseBehavior = false;
+
+    void OnTriggerExit2D(Collider2D other)
     {
-        // Check if the player enters the trigger (ensure the player has the "Player" tag).
-        if (other.CompareTag("Player"))
+        if (!other.CompareTag("Player"))
+            return;
+
+        // Determine which side the player exited relative to this trigger's x position.
+        if (other.transform.position.x < transform.position.x)
         {
-            if(nextZoneCamera != null)
+            // Player exited to the left.
+            if (!reverseBehavior)
             {
-                nextZoneCamera.Priority = nextZonePriority;
-                Debug.Log("Next zone camera priority set to " + nextZonePriority);
+                // Normal behavior: activate next zone camera.
+                if (nextZoneCamera != null)
+                {
+                    nextZoneCamera.Priority = activePriority;
+                    if (previousZoneCamera != null)
+                        previousZoneCamera.Priority = inactivePriority;
+                    Debug.Log("Player exited left. Next zone camera activated.");
+                }
             }
-            if(previousZoneCamera != null)
+            else
             {
-                previousZoneCamera.Priority = previousZonePriority;
-                Debug.Log("Previous zone camera priority set to " + previousZonePriority);
+                // Reversed behavior: activate previous zone camera.
+                if (previousZoneCamera != null)
+                {
+                    previousZoneCamera.Priority = activePriority;
+                    if (nextZoneCamera != null)
+                        nextZoneCamera.Priority = inactivePriority;
+                    Debug.Log("Player exited left. (Reversed) Previous zone camera activated.");
+                }
+            }
+        }
+        else if (other.transform.position.x > transform.position.x)
+        {
+            // Player exited to the right.
+            if (!reverseBehavior)
+            {
+                // Normal behavior: activate previous zone camera.
+                if (previousZoneCamera != null)
+                {
+                    previousZoneCamera.Priority = activePriority;
+                    if (nextZoneCamera != null)
+                        nextZoneCamera.Priority = inactivePriority;
+                    Debug.Log("Player exited right. Previous zone camera activated.");
+                }
+            }
+            else
+            {
+                // Reversed behavior: activate next zone camera.
+                if (nextZoneCamera != null)
+                {
+                    nextZoneCamera.Priority = activePriority;
+                    if (previousZoneCamera != null)
+                        previousZoneCamera.Priority = inactivePriority;
+                    Debug.Log("Player exited right. (Reversed) Next zone camera activated.");
+                }
             }
         }
     }
