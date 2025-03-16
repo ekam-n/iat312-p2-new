@@ -34,14 +34,14 @@ public class coconutProjectile : MonoBehaviour
         {
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
-            rb.bodyType = RigidbodyType2D.Kinematic;
+        //     rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null)
-        {
-            col.isTrigger = true; // so enemies don't push it
-        }
+        // Collider2D col = GetComponent<Collider2D>();
+        // if (col != null)
+        // {
+        //     col.isTrigger = true; // so enemies don't push it
+        // }
     }
 
     void AttractNearbyEnemies()
