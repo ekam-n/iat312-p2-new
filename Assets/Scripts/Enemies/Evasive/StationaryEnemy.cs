@@ -113,8 +113,6 @@ public class StationaryEnemy : SimpleEnemy
 
         if (isChasing)
         {
-            // In chase mode, move horizontally toward the player's x position
-            // while preserving vertical velocity so gravity affects the enemy.
             if (target != null)
             {
                 float directionX = Mathf.Sign(target.position.x - transform.position.x);
@@ -133,9 +131,18 @@ public class StationaryEnemy : SimpleEnemy
         }
         else
         {
-            // Not chasing: return to the initial horizontal position.
-            Patrol();
-            attackTimer = attackCooldown;
+            // If magnetized (i.e. target is the coconut), skip Patrol to allow magnetization to control positioning.
+            if (target != null && target.GetComponent<coconutProjectile>() != null)
+            {
+                // Do nothing or simply hold the current position.
+                attackTimer = attackCooldown;
+            }
+            else
+            {
+                // Normal patrol behavior: return to the initial horizontal position.
+                Patrol();
+                attackTimer = attackCooldown;
+            }
         }
     }
 

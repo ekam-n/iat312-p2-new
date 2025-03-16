@@ -14,13 +14,13 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     private bool isFlamethrowerActive = false;
     private bool isBlowDartActive = false;
 
-    private int fireballAmmo = 0;
-    public int maxFireballs = 5;
-
-    private int normalDartAmmo = 0;
-    private int poisonDartAmmo = 0;
-    public int maxNormalDarts = 10;
-    public int maxPoisonDarts = 5;
+    private int fireballAmmo = 0; // Start with zero fireballs
+    public int maxFireballs = 10; // Set max fireball capacity
+    
+    private int normalDartAmmo = 0; // Start with zero normal darts
+    private int poisonDartAmmo = 0; // Start with zero poison darts
+    public int maxNormalDarts = 10; // Set max normal dart capacity
+    public int maxPoisonDarts = 5; // Set max poison dart capacity
 
     public bool IsFlamethrowerEquipped => weaponManager.currentWeapon is Flamethrower;
     public bool IsBlowDartEquipped => weaponManager.currentWeapon is BlowDartWeapon;
@@ -199,7 +199,20 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         }
     }
 
-    public int GetFireballAmmo() => fireballAmmo;
-    public int GetNormalDartAmmo() => normalDartAmmo;
-    public int GetPoisonDartAmmo() => poisonDartAmmo;
+    // Methods to get the current ammo counts
+    public int GetFireballAmmo()
+    {
+        return fireballAmmo;
+    }
+    
+    public int GetNormalDartAmmo()
+    {
+        return normalDartAmmo;
+    }
+    
+    public int GetPoisonDartAmmo()
+    {
+        return poisonDartAmmo;
+    }
+
 }
