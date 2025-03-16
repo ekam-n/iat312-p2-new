@@ -18,9 +18,22 @@ public class RangedEnemy : StationaryEnemy
     // Track the previous chase state.
     private bool wasChasing = false;
 
+    // Store the original local position of the shoot point.
+    private Vector3 originalShootPointLocalPos;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        // Store the shootPoint's original local position.
+        if (shootPoint != null)
+        {
+            originalShootPointLocalPos = shootPoint.localPosition;
+        }
+    }
+
     public override void Patrol()
     {
-        // Keep the enemy stationary.
+        // For a stationary enemy, simply remain in place.
         rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
     }
 
@@ -38,10 +51,11 @@ public class RangedEnemy : StationaryEnemy
             Vector2 toPlayer = target.position - transform.position;
             if (toPlayer.magnitude <= visionRange)
             {
+                // Cast a ray toward the player.
                 RaycastHit2D hit = Physics2D.Raycast(transform.position, toPlayer.normalized, toPlayer.magnitude, obstacleMask);
                 if (hit.collider == null)
                 {
-                    // Use default facing when not chasing.
+                    // When not chasing, use the default facing based on faceLeftByDefault.
                     Vector2 defaultFacing = new Vector2(faceLeftByDefault ? -1f : 1f, 0f);
                     float angleToPlayer = Vector2.Angle(defaultFacing, toPlayer);
                     isChasing = (angleToPlayer <= visionAngle);
@@ -62,23 +76,44 @@ public class RangedEnemy : StationaryEnemy
         }
 
         // --- Movement & Facing ---
-        Patrol();
+        Patrol(); // (enemy is stationary)
+
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null)
         {
-            // Only flip sprite toward the player if chasing; otherwise, use the default.
-            sr.flipX = isChasing && target != null ? (target.position.x < transform.position.x) : faceLeftByDefault;
+            // If chasing, face toward the player; otherwise, use default based on faceLeftByDefault.
+            if (isChasing && target != null)
+            {
+                sr.flipX = (target.position.x < transform.position.x);
+            }
+            else
+            {
+                sr.flipX = faceLeftByDefault;
+            }
+        }
+
+        // --- Adjust ShootPoint Position ---
+        if (shootPoint != null && sr != null)
+        {
+            // When the enemy's sprite is flipped (i.e. facing left) the shootPoint's x should be flipped.
+            if (sr.flipX)
+            {
+                shootPoint.localPosition = new Vector3(-Mathf.Abs(originalShootPointLocalPos.x), originalShootPointLocalPos.y, originalShootPointLocalPos.z);
+            }
+            else
+            {
+                shootPoint.localPosition = originalShootPointLocalPos;
+            }
         }
 
         // --- Ranged Attack ---
         if (isChasing)
         {
-            // If we just started chasing, reset shootTimer so we fire immediately.
+            // When the enemy first starts chasing, fire immediately.
             if (!wasChasing)
             {
                 shootTimer = 0f;
             }
-
             shootTimer -= Time.deltaTime;
             if (shootTimer <= 0f)
             {
@@ -88,11 +123,10 @@ public class RangedEnemy : StationaryEnemy
         }
         else
         {
-            // If not chasing, reset the timer.
+            // When not chasing, reset the shoot timer.
             shootTimer = shootCooldown;
         }
 
-        // Update previous chase state.
         wasChasing = isChasing;
     }
 
@@ -100,8 +134,9 @@ public class RangedEnemy : StationaryEnemy
     {
         if (projectilePrefab != null && shootPoint != null && target != null)
         {
-            // Calculate the direction from shootPoint to the player.
-            Vector2 direction = ((Vector2)target.position - (Vector2)shootPoint.position).normalized;
+            // Calculate the normalized direction from the shoot point to the player.
+            Vector2 direction = (((Vector2)target.position) - ((Vector2)shootPoint.position)).normalized;
+            // Compute the angle (in degrees) for the projectile so that it faces the player.
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             // Instantiate the projectile with the computed rotation.
             GameObject proj = Instantiate(projectilePrefab, shootPoint.position, Quaternion.Euler(0, 0, angle));
