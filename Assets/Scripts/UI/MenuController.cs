@@ -1,14 +1,11 @@
 using UnityEngine;
 using TMPro;  // Ensure you have this namespace for TextMeshPro
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;  // Add this for UI Button functionality
 
 public class MenuController : MonoBehaviour
 {
     public GameObject instructionsPanel; // Reference to the instructions panel
     public TextMeshProUGUI instructionText; // Reference to the TextMeshProUGUI component
-    public Button respawnButton; // Reference to the Respawn Button UI element
-    public PlayerHealth playerHealth; // Reference to the PlayerHealth script
 
     void Start()
     {
@@ -30,17 +27,6 @@ public class MenuController : MonoBehaviour
             {
                 Debug.LogError("Instruction TextMeshProUGUI is missing or destroyed!");
             }
-        }
-
-        // Ensure that the respawn button is only active if the player is dead
-        if (respawnButton != null)
-        {
-            respawnButton.gameObject.SetActive(false); // Start with the respawn button hidden
-            respawnButton.onClick.AddListener(OnRespawnButtonClicked);
-        }
-        else
-        {
-            Debug.LogError("Respawn Button is not assigned!");
         }
     }
 
@@ -108,24 +94,5 @@ public class MenuController : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-    }
-
-    // New method to handle the respawn button click
-    private void OnRespawnButtonClicked()
-    {
-        if (playerHealth != null)
-        {
-            playerHealth.Respawn(); // Call the Respawn method on PlayerHealth
-            respawnButton.gameObject.SetActive(false); // Hide the respawn button again after clicking
-        }
-    }
-
-    // Call this when the player dies to show the respawn button
-    public void ShowRespawnButton()
-    {
-        if (respawnButton != null)
-        {
-            respawnButton.gameObject.SetActive(true); // Show the respawn button when the player is dead
-        }
     }
 }
