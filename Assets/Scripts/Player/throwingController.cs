@@ -9,16 +9,24 @@ public class throwingController : MonoBehaviour
     [Tooltip("Angular velocity (in degrees per second) to spin the molotov when thrown.")]
     public float spinSpeed = 360f; // Adjust as needed
 
+    public int mollyAmmo = 0;
+    public int maxMolly = 5;
+
+    public int cocoAmmo = 0;
+    public int maxCoco = 5;
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift)) // Change input as needed
+        if (Input.GetKeyDown(KeyCode.LeftShift) && mollyAmmo !=0) // Change input as needed
         {
             ThrowMolotov();
+            mollyAmmo -= 1;
         }
 
-        if (Input.GetKeyDown(KeyCode.E)) // Change input as needed
+        if (Input.GetKeyDown(KeyCode.E) && cocoAmmo !=0) // Change input as needed
         {
             ThrowCoconut();
+            cocoAmmo -= 1;
         }
     }
 
@@ -56,4 +64,5 @@ public class throwingController : MonoBehaviour
             rb.angularVelocity = spinSpeed;
         }
     }
+   
 }
