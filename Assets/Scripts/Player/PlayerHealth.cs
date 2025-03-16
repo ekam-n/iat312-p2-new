@@ -39,7 +39,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Handle the player's death.
-    private void Die()
+    public void Die()
     {
         Debug.Log("Player died!");
         // Optionally, play a death animation, disable controls, or reload the scene.
