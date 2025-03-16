@@ -170,7 +170,7 @@ MonoBehaviour:
   moveSpeed: 10
   damage: 10
   rb: {fileID: 0}
-  patrolRange: 10.39
+  patrolRange: 14.69
   patrolDirection: 1
   visionRange: 18.3
   visionAngle: 45
