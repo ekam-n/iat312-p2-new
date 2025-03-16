@@ -5,8 +5,8 @@ public class RespawnerHandler : MonoBehaviour
 {
     public Button respawnButton;               // Reference to the respawn button
     public PlayerHealth playerHealth;          // Reference to PlayerHealth (for health reset)
-    public PlayerWeaponSwitcher playerWeaponSwitcher;  // Reference to PlayerWeaponSwitcher (for ammo reset)
-    public BlowDartWeapon blowDartWeapon;      // Reference to BlowDartWeapon for ammo reset
+    public PlayerWeaponSwitcher playerWeaponSwitcher;  // Reference to PlayerWeaponSwitcher (for fireball ammo reset)
+    public BlowDartWeapon blowDartWeapon;      // Reference to BlowDartWeapon (for dart ammo reset)
     private TikiAmmoPickup[] ammoPickups;      // Array to store all ammo pickups in the scene
 
     void Start()
@@ -32,16 +32,16 @@ public class RespawnerHandler : MonoBehaviour
         {
             playerHealth.Respawn();  // Handle health respawn (position reset, health restore, etc.)
             
-            // Reset ammo when the player respawns
+            // Reset fireball ammo
             if (playerWeaponSwitcher != null)
             {
-                playerWeaponSwitcher.ResetAmmo();  // Reset all ammo to 0
+                playerWeaponSwitcher.ResetAmmo();  // Reset all fireball ammo to 0
             }
 
-            // Reset BlowDartWeapon ammo
+            // Reset blowdart ammo
             if (blowDartWeapon != null)
             {
-                blowDartWeapon.ResetAmmo();  // Reset blowdart ammo
+                blowDartWeapon.ResetAmmo();  // Reset all dart ammo to 0
             }
 
             // Reset all ammo pickups in the scene

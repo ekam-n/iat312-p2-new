@@ -48,8 +48,9 @@ public class BlowDartWeapon : Weapon
         }
     }
 
-    void ShootDart(bool isPoison)
+    public void ShootDart(bool isPoison)
     {
+        Debug.Log("Attempting to shoot dart...");  // Debug log added
         GameObject dartToShoot = isPoison ? poisonDartPrefab : dartPrefab;
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0; // Set z to 0 since we're working in 2D
@@ -57,56 +58,38 @@ public class BlowDartWeapon : Weapon
         // Get direction towards mouse
         Vector3 shootDirection = (mousePosition - shootPoint.position).normalized;
 
-        // Instantiate the dart
+        // Instantiate the dart and set it on its way
         GameObject dart = Instantiate(dartToShoot, shootPoint.position, Quaternion.identity);
         Rigidbody2D rb = dart.GetComponent<Rigidbody2D>();
-
-        // Ensure Rigidbody2D exists before applying forces
         if (rb != null)
         {
-            // Apply velocity to the dart with consistent direction and speed
-            Vector2 velocity = shootDirection * dartSpeed;
-
-            // Apply the velocity to the Rigidbody2D component
-            rb.linearVelocity = velocity;
-
-            // Apply gravity
-            rb.gravityScale = gravityScale;
+            rb.linearVelocity = shootDirection * dartSpeed;
+            rb.gravityScale = gravityScale; // Apply gravity to the dart
         }
 
-        // Set dart lifetime before destruction (e.g., 5 seconds)
-        Destroy(dart, 5f);  // Dart will disappear after 5 seconds
-
-        // Reduce ammo based on the dart type
+        // Update ammo count
         if (isPoison)
-        {
-            poisonDartAmmo--; // Reduce poison dart ammo
-        }
+            poisonDartAmmo--;
         else
-        {
-            normalDartAmmo--; // Reduce normal dart ammo
-        }
+            normalDartAmmo--;
+
+        Debug.Log($"Normal Darts Left: {normalDartAmmo} | Poison Darts Left: {poisonDartAmmo}");
     }
 
-    // Method to add normal dart ammo
     public void AddNormalDarts(int amount)
     {
         normalDartAmmo = Mathf.Min(normalDartAmmo + amount, startingNormalDarts);
-        Debug.Log("Added " + amount + " normal darts. Total: " + normalDartAmmo);
     }
 
-    // Method to add poison dart ammo
     public void AddPoisonDarts(int amount)
     {
         poisonDartAmmo = Mathf.Min(poisonDartAmmo + amount, startingPoisonDarts);
-        Debug.Log("Added " + amount + " poison darts. Total: " + poisonDartAmmo);
     }
 
-    // Reset ammo to the initial values
+    // New method to reset ammo
     public void ResetAmmo()
     {
-        normalDartAmmo = startingNormalDarts;
-        poisonDartAmmo = startingPoisonDarts;
-        Debug.Log("Ammo reset. Normal Darts: " + normalDartAmmo + ", Poison Darts: " + poisonDartAmmo);
+        normalDartAmmo = 0; // Reset to starting normal darts amount
+        poisonDartAmmo = 0; // Reset to starting poison darts amount
     }
 }

@@ -17,8 +17,8 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     private int fireballAmmo = 0; // Start with zero fireballs
     public int maxFireballs = 10; // Set max fireball capacity
     
-    private int normalDartAmmo = 0; // Start with zero normal darts
-    private int poisonDartAmmo = 0; // Start with zero poison darts
+    public int normalDartAmmo = 0; // Start with zero normal darts
+    public int poisonDartAmmo = 0; // Start with zero poison darts
     public int maxNormalDarts = 10; // Set max normal dart capacity
     public int maxPoisonDarts = 5; // Set max poison dart capacity
 
@@ -61,7 +61,15 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         // Handle input for weapon actions
         if (IsBlowDartEquipped)
         {
-            blowDartInstance.HandleInput();  // Call HandleInput() for BlowDartWeapon
+            // Handle Dart Shooting (Left Click for normal dart, Right Click for poison dart)
+            if (Input.GetMouseButtonDown(0) && blowDartInstance.normalDartAmmo > 0) // Left click for normal dart
+            {
+                blowDartInstance.ShootDart(false); // False for normal dart
+            }
+            else if (Input.GetMouseButtonDown(1) && blowDartInstance.poisonDartAmmo > 0) // Right click for poison dart
+            {
+                blowDartInstance.ShootDart(true); // True for poison dart
+            }
         }
 
         // Fireball usage input (press a key, for example, spacebar)
@@ -99,6 +107,7 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 
     void ToggleBlowDart()
     {
+        Debug.Log("Toggling BlowDart");  // Debug log added
         if (isFlamethrowerActive)
         {
             ToggleFlamethrower();
@@ -169,11 +178,20 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 
     // Reset ammo to default values
     public void ResetAmmo()
+{
+    fireballAmmo = 0;  // Reset fireball ammo
+    normalDartAmmo = 0;  // Reset normal dart ammo
+    poisonDartAmmo = 0;  // Reset poison dart ammo
+
+    // Reset BlowDartWeapon ammo
+    if (IsBlowDartEquipped && blowDartInstance != null)
     {
-        fireballAmmo = 0;
-        normalDartAmmo = 0;
-        poisonDartAmmo = 0;
+        blowDartInstance.ResetAmmo();  // Call the ResetAmmo method in BlowDartWeapon
     }
+
+    Debug.Log("Ammo reset: Fireballs = " + fireballAmmo + ", Normal Darts = " + normalDartAmmo + ", Poison Darts = " + poisonDartAmmo);
+}
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -190,12 +208,12 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         else if (other.CompareTag("NormalDartAmmo"))
         {
             AddNormalDarts(5);
-            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);  // Hide instead of destroy
         }
         else if (other.CompareTag("PoisonDartAmmo"))
         {
             AddPoisonDarts(2);
-            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);  // Hide instead of destroy
         }
     }
 
@@ -209,10 +227,9 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     {
         return normalDartAmmo;
     }
-    
+
     public int GetPoisonDartAmmo()
     {
         return poisonDartAmmo;
     }
-
 }

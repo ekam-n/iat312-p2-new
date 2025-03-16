@@ -3,8 +3,8 @@ using UnityEngine;
 public class TikiAmmoPickup : MonoBehaviour
 {
     public int fireballAmount = 3;    // Ammo for fireballs
-    public int normalDartAmount = 5;  // Ammo for normal darts
-    public int poisonDartAmount = 3;  // Ammo for poison darts
+    public int normalDartAmount = 0;  // Ammo for normal darts
+    public int poisonDartAmount = 0;  // Ammo for poison darts
     private Vector3 initialPosition;
 
     private void Start()
@@ -40,6 +40,7 @@ public class TikiAmmoPickup : MonoBehaviour
     public void ResetPickup()
     {
         transform.position = initialPosition;  // Reset the position
-        gameObject.SetActive(true);            // Reactivate the ammo pickup
+        gameObject.SetActive(true);    
+                // Reactivate the ammo pickup
     }
 }
