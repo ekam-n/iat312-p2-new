@@ -3,11 +3,11 @@ using UnityEngine.UI;
 
 public class RespawnerHandler : MonoBehaviour
 {
-    public Button respawnButton;              // Reference to the respawn button
-    public PlayerHealth playerHealth;         // Reference to PlayerHealth (for health reset)
-    public PlayerWeaponSwitcher playerWeaponSwitcher; // Reference to PlayerWeaponSwitcher (for ammo reset)
-
-    private TikiAmmoPickup[] ammoPickups;     // Array to store all ammo pickups in the scene
+    public Button respawnButton;               // Reference to the respawn button
+    public PlayerHealth playerHealth;          // Reference to PlayerHealth (for health reset)
+    public PlayerWeaponSwitcher playerWeaponSwitcher;  // Reference to PlayerWeaponSwitcher (for ammo reset)
+    public BlowDartWeapon blowDartWeapon;      // Reference to BlowDartWeapon for ammo reset
+    private TikiAmmoPickup[] ammoPickups;      // Array to store all ammo pickups in the scene
 
     void Start()
     {
@@ -36,6 +36,12 @@ public class RespawnerHandler : MonoBehaviour
             if (playerWeaponSwitcher != null)
             {
                 playerWeaponSwitcher.ResetAmmo();  // Reset all ammo to 0
+            }
+
+            // Reset BlowDartWeapon ammo
+            if (blowDartWeapon != null)
+            {
+                blowDartWeapon.ResetAmmo();  // Reset blowdart ammo
             }
 
             // Reset all ammo pickups in the scene

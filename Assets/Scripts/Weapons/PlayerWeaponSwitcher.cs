@@ -16,7 +16,7 @@ public class PlayerWeaponSwitcher : MonoBehaviour
 
     private int fireballAmmo = 0;
     public int maxFireballs = 5;
-    
+
     private int normalDartAmmo = 0;
     private int poisonDartAmmo = 0;
     public int maxNormalDarts = 10;
@@ -56,6 +56,18 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         if (canEquipBlowDart && Input.GetKeyDown(KeyCode.B))
         {
             ToggleBlowDart();
+        }
+
+        // Handle input for weapon actions
+        if (IsBlowDartEquipped)
+        {
+            blowDartInstance.HandleInput();  // Call HandleInput() for BlowDartWeapon
+        }
+
+        // Fireball usage input (press a key, for example, spacebar)
+        if (IsFlamethrowerEquipped && fireballAmmo > 0 && Input.GetKeyDown(KeyCode.Space)) // Example: using fireballs when pressing Space
+        {
+            UseFireball();
         }
 
         Debug.Log("Fireballs: " + fireballAmmo + " | Normal Darts: " + normalDartAmmo + " | Poison Darts: " + poisonDartAmmo);
@@ -100,13 +112,31 @@ public class PlayerWeaponSwitcher : MonoBehaviour
             if (isBlowDartActive)
             {
                 weaponManager.EquipWeapon(blowDartInstance);
-                blowDartInstance.AddNormalDarts(normalDartAmmo);
-                blowDartInstance.AddPoisonDarts(poisonDartAmmo);
+                blowDartInstance.AddNormalDarts(normalDartAmmo);  // Sync normal darts
+                blowDartInstance.AddPoisonDarts(poisonDartAmmo);  // Sync poison darts
             }
             else
             {
                 weaponManager.UnequipWeapon();
             }
+        }
+    }
+
+    // Fireball usage method
+    public bool UseFireball()
+    {
+        if (fireballAmmo > 0)
+        {
+            fireballAmmo--;
+            Debug.Log("Fireball used! Remaining: " + fireballAmmo);
+            // Optionally, trigger the flamethrower's fireball effect here if needed.
+            // flamethrowerInstance.Fire(); // Uncomment if there's a Fire method in the Flamethrower class
+            return true;
+        }
+        else
+        {
+            Debug.Log("Out of fireballs!");
+            return false;
         }
     }
 
@@ -137,26 +167,13 @@ public class PlayerWeaponSwitcher : MonoBehaviour
         }
     }
 
-    public bool UseFireball()
-    {
-        if (fireballAmmo > 0)
-        {
-            fireballAmmo--;
-            return true;
-        }
-        return false;
-    }
-
-    // Add this method to reset ammo
+    // Reset ammo to default values
     public void ResetAmmo()
     {
         fireballAmmo = 0;
         normalDartAmmo = 0;
         poisonDartAmmo = 0;
-
-    // Optionally reset weapon states if needed
     }
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
