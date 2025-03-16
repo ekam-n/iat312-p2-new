@@ -2,19 +2,28 @@ using UnityEngine;
 
 public class KillTile : MonoBehaviour
 {
-    // Called when the player collides with the tile
+    // Called when anything collides with the tile
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            // Call your player health or death logic here
-            // For example, if you have a PlayerHealth script:
+            // Handle player death
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             if (playerHealth != null)
             {
-                playerHealth.Die();  // Assuming Die() handles death logic
+                playerHealth.Die();  // Assuming Die() handles the player death logic
+            }
+        }
+
+        // Check if the object that collided is an enemy
+        else if (other.CompareTag("Enemy"))
+        {
+            // Get the enemy's EnemyBase script and call its Die method
+            EnemyBase enemy = other.GetComponent<EnemyBase>();
+            if (enemy != null)
+            {
+                enemy.Die();  // Disable the enemy instead of destroying it
             }
         }
     }
 }
-

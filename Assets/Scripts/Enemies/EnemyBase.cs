@@ -31,9 +31,9 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     // Common death behavior.
-    protected virtual void Die()
+    public virtual void Die()
     {
-        Destroy(gameObject);
+         gameObject.SetActive(false);  
     }
 
     // Abstract methods for enemy behavior.

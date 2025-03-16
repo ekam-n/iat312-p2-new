@@ -59,14 +59,22 @@ public class RespawnerHandler : MonoBehaviour
 
             // Reset all enemies' tranquilized status and positions
             if (enemies != null)
+        {
+            foreach (var enemy in enemies)
             {
-                foreach (var enemy in enemies)
-                {
-                    enemy.ResetEnemyStatus();  // Reset tranquilization and other statuses
-                    enemy.ResetPosition(); 
-                    enemy.ResetHealth();    // Reset the enemy's position to its initial spawn position
-                }
-            }
+        // Check if the enemy object is not null and is not destroyed
+            if (enemy != null && !enemy.gameObject.activeInHierarchy) 
+            {
+            // Reactivate the enemy if it's deactivated
+            enemy.gameObject.SetActive(true);
+         }
+        
+        // Reset the enemy's status, position, and health
+            enemy.ResetEnemyStatus();   // Reset tranquilization and other statuses
+             enemy.ResetPosition();      // Reset position to the initial spawn position
+             enemy.ResetHealth();        // Reset health to the default value (e.g., 100)
+        }
+}
         }
         else
         {
