@@ -8,6 +8,7 @@ public class RespawnerHandler : MonoBehaviour
     public PlayerWeaponSwitcher playerWeaponSwitcher;  // Reference to PlayerWeaponSwitcher (for fireball ammo reset)
     public BlowDartWeapon blowDartWeapon;      // Reference to BlowDartWeapon (for dart ammo reset)
     private TikiAmmoPickup[] ammoPickups;      // Array to store all ammo pickups in the scene
+    private SimpleEnemy[] enemies;             // Array to store all enemies in the scene
 
     void Start()
     {
@@ -23,6 +24,9 @@ public class RespawnerHandler : MonoBehaviour
 
         // Find all TikiAmmoPickup objects in the scene
         ammoPickups = FindObjectsOfType<TikiAmmoPickup>();
+
+        // Find all SimpleEnemy objects in the scene
+        enemies = FindObjectsOfType<SimpleEnemy>();
     }
 
     // Called when the respawn button is clicked
@@ -50,6 +54,17 @@ public class RespawnerHandler : MonoBehaviour
                 foreach (var ammoPickup in ammoPickups)
                 {
                     ammoPickup.ResetPickup();  // Reset the ammo pickup to its initial position
+                }
+            }
+
+            // Reset all enemies' tranquilized status and positions
+            if (enemies != null)
+            {
+                foreach (var enemy in enemies)
+                {
+                    enemy.ResetEnemyStatus();  // Reset tranquilization and other statuses
+                    enemy.ResetPosition(); 
+                    enemy.ResetHealth();    // Reset the enemy's position to its initial spawn position
                 }
             }
         }
