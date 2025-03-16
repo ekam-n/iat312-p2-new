@@ -32,34 +32,22 @@ public class CheckpointManager : MonoBehaviour
         Debug.Log("Checkpoint position updated to: " + lastCheckpointPosition);
     }
 
-    // Reset the player position, ammo, and enemies
     public void RespawnPlayer()
     {
-        if (playerWeaponSwitcher != null)
-        {
-            // Reset player ammo (can be modified if specific ammo is to be reset)
-            playerWeaponSwitcher.ResetAmmo();
-        }
-
-        // Reset player position to the last checkpoint
-        if (respawnPoint != null)
-        {
-            respawnPoint.position = lastCheckpointPosition;
-        }
-
-        // Reset the enemies
-        ResetEnemies();
-    }
-
-    // Reset all enemies (You can call specific methods here if needed for enemy reset)
-    private void ResetEnemies()
+    // Reset player position to the last checkpoint
+    if (respawnPoint != null)
     {
-        // Find all enemies and reset them to their initial position and state
-        SimpleEnemy[] enemies = FindObjectsOfType<SimpleEnemy>(FindObjectSortMode.None);
-
-        foreach (SimpleEnemy enemy in enemies)
-        {
-            enemy.ResetEnemy();
-        }
+        respawnPoint.position = lastCheckpointPosition;
     }
+
+    // Reset player ammo and weapons
+    if (playerWeaponSwitcher != null)
+    {
+        playerWeaponSwitcher.ResetAmmo();  // Reset ammo to 0
+    }
+
+    // Optionally, you can reinitialize the player state, equip weapons, etc.
+    // E.g., set the player to a default state if needed (like equipping the first weapon).
+    }
+
 }

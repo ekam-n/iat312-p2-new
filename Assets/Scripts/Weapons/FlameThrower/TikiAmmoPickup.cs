@@ -1,8 +1,10 @@
 using UnityEngine;
-
 public class TikiAmmoPickup : MonoBehaviour
 {
-    public int fireballAmount = 3; // How many fireballs this pickup gives
+    public int fireballAmount = 3;
+    private Vector3 initialPosition;
+
+    private void Start() { initialPosition = transform.position; }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -11,12 +13,15 @@ public class TikiAmmoPickup : MonoBehaviour
             PlayerWeaponSwitcher player = other.GetComponent<PlayerWeaponSwitcher>();
             if (player != null)
             {
-                // Add fireballs to the player's ammo
                 player.AddFireballs(fireballAmount);
-
-                // Destroy the pickup object
-                Destroy(gameObject); // Destroy the pickup
+                gameObject.SetActive(false);
             }
         }
+    }
+
+    public void ResetPickup()
+    {
+        transform.position = initialPosition;
+        gameObject.SetActive(true);
     }
 }

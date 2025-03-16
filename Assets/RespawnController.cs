@@ -1,16 +1,18 @@
 using UnityEngine;
-using UnityEngine.UI;  // Ensure this is included for button functionality
+using UnityEngine.UI;
 
 public class Respawner : MonoBehaviour
 {
-    public PlayerHealth playerHealth; // Reference to the PlayerHealth script
-    public Button respawnButton;      // Reference to the respawn button
+    public Button respawnButton;              // Reference to the respawn button
+    public PlayerHealth playerHealth;         // Reference to PlayerHealth (for health reset)
+    public PlayerWeaponSwitcher playerWeaponSwitcher; // Reference to PlayerWeaponSwitcher (for ammo reset)
 
     void Start()
     {
+        // Ensure respawnButton is assigned
         if (respawnButton != null)
         {
-            respawnButton.onClick.AddListener(OnRespawnButtonClicked); // Add listener to button
+            respawnButton.onClick.AddListener(OnRespawnButtonClicked); // Add listener for button press
         }
         else
         {
@@ -18,12 +20,18 @@ public class Respawner : MonoBehaviour
         }
     }
 
-    // Rename the method to avoid conflict if necessary
+    // Called when the respawn button is clicked
     private void OnRespawnButtonClicked()
     {
         if (playerHealth != null)
         {
-            playerHealth.Respawn();  // Call the Respawn method from PlayerHealth script
+            playerHealth.Respawn();  // Handle health respawn (position reset, health restore, etc.)
+            
+            // Reset ammo when the player respawns
+            if (playerWeaponSwitcher != null)
+            {
+                playerWeaponSwitcher.ResetAmmo();  // Reset all ammo to 0
+            }
         }
         else
         {
