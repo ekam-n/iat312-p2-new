@@ -1,18 +1,17 @@
 using UnityEngine;
-using UnityEngine.UI; // Import to handle UI elements
 
 public class PlayerHealth : MonoBehaviour
 {
     public float health = 100f; // Player's starting health
     public float respawnDelay = 2f;  // Delay before respawning
-    public Vector3 spawnPosition;    // Player's spawn position
+    public Vector2 spawnPosition;    // Player's spawn position (2D version)
     public GameObject respawnButton; // Reference to the Respawn Button in the UI
 
     private bool isDead = false;  // Track if the player is dead
 
     private void Start()
     {
-        // Set the spawn position (this can be adjusted as needed)
+        // Initially set the spawn position to the player's current position at start
         spawnPosition = transform.position;
 
         // Ensure the respawn button is hidden initially
@@ -46,21 +45,18 @@ public class PlayerHealth : MonoBehaviour
 
             // Make the respawn button visible
             respawnButton.SetActive(true);
-
-            // Optionally, play a death animation or sound here
-
-            // Trigger the respawn after a delay if needed (you can manually respawn from the UI button too)
-            // Invoke(nameof(Respawn), respawnDelay);
         }
     }
 
     // Respawn the player after a delay
     public void Respawn()
     {
-        // Reset the player's position to the spawn point
-        transform.position = spawnPosition;
+        // Use the CheckpointManager to get the last checkpoint position (2D)
+        transform.position = CheckpointManager.instance.lastCheckpointPosition;
 
-        // Optionally, re-enable any components (like Animator or RigidBody)
+        Debug.Log("Respawning at position: " + CheckpointManager.instance.lastCheckpointPosition);  // Debug log
+
+        // Optionally, re-enable any components (like Animator or RigidBody2D)
         gameObject.SetActive(true);
 
         // Reset the player's health
@@ -72,5 +68,15 @@ public class PlayerHealth : MonoBehaviour
 
         // Hide the respawn button after the respawn
         respawnButton.SetActive(false);
+    }
+
+    // Method to update the spawn position when the player reaches a checkpoint
+    public void UpdateSpawnPosition(Vector2 newSpawnPosition)
+    {
+        spawnPosition = newSpawnPosition;
+        Debug.Log("Updated spawn position to: " + newSpawnPosition);  // Debug log
+
+        // Update the last checkpoint position in the CheckpointManager
+        CheckpointManager.instance.UpdateCheckpoint(newSpawnPosition);
     }
 }

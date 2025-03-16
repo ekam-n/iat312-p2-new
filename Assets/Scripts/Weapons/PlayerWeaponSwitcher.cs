@@ -217,4 +217,25 @@ public class PlayerWeaponSwitcher : MonoBehaviour
     {
         return poisonDartAmmo;
     }
+
+    public void ResetAmmo()
+    {
+    fireballAmmo = 0; // Reset to initial value
+    normalDartAmmo = 0;
+    poisonDartAmmo = 0;
+
+    // Optionally, you can reset ammo in your weapon instances if needed
+    if (IsFlamethrowerEquipped && flamethrowerInstance != null)
+    {
+        flamethrowerInstance.AddFireballs(fireballAmmo);
+    }
+    if (IsBlowDartEquipped && blowDartInstance != null)
+    {
+        blowDartInstance.AddNormalDarts(normalDartAmmo);
+        blowDartInstance.AddPoisonDarts(poisonDartAmmo);
+    }
+    
+    Debug.Log("Ammo reset: Fireballs: " + fireballAmmo + ", Normal Darts: " + normalDartAmmo + ", Poison Darts: " + poisonDartAmmo);
+    }
+
 }

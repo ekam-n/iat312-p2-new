@@ -261,4 +261,35 @@ public class SimpleEnemy : EnemyBase
             }
         }
     }
+
+    // Reset the enemy's state (position, patrol, attack, etc.).
+        public void ResetEnemy()
+    {
+    // Reset position
+    transform.position = initialPosition;
+
+    // Reset Rigidbody velocity
+    if (rb != null)
+    {
+        rb.velocity = Vector2.zero; // Stop any movement
+    }
+
+    // Reset patrol state
+    patrolDirection = 1;  // Default patrol direction
+    isChasing = false;
+    lostSightTimer = 0f;
+
+    // Reset attack timer
+    attackTimer = attackCooldown;
+
+    // Reset sprite direction (if necessary)
+    SpriteRenderer sr = GetComponent<SpriteRenderer>();
+    if (sr != null)
+    {
+        sr.flipX = (patrolDirection < 0);
+    }
+
+    Debug.Log(name + " reset to initial position: " + initialPosition);
+    }
+
 }
