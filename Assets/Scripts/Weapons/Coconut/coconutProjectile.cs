@@ -1,88 +1,83 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class coconutProjectile : MonoBehaviour
 {
-    public float tranquilizeDuration = 45f;  // Duration the enemy stays asleep.
-    public LayerMask enemyLayer;             // Set in the Inspector to the enemy layer.
-    public LayerMask flyingEnemyLayer;             // Set in the Inspector to the flyingEnemy layer.
-    public LayerMask groundLayer;            // Set in the Inspector to the ground layer.
-    private Rigidbody2D rb;
-    private bool hasStuck = false;           // Flag to indicate if the dart has stuck to the ground.
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        Destroy(gameObject, 10f);
-    }
+    public float attractionRadius = 5f; // Radius within which enemies will be attracted
+    public float attractionDuration = 5f; // Time enemies stay focused on the coconut
+    public LayerMask groundLayer; // Layer that represents the ground
 
-    void FixedUpdate()
+    private bool hasLanded = false; // Flag to ensure attraction happens only once
+
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        // Only update rotation if there is significant velocity.
-        if (rb.linearVelocity.sqrMagnitude > 0.01f)
+        // Check if the coconut hits the ground
+        if (!hasLanded && ((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
-            float angle = Mathf.Atan2(rb.linearVelocity.y, rb.linearVelocity.x) * Mathf.Rad2Deg;
-            // If your sprite’s default orientation isn’t pointing to the right,
-            // add an offset (e.g., 90 degrees) as needed.
-            transform.rotation = Quaternion.Euler(0, 0, angle);
+            hasLanded = true;
+            StopPhysics();
+            AttractNearbyEnemies();
+            StartCoroutine(HandleCoconutLifecycle());
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void StopPhysics()
     {
-        // If we already stuck to the ground, ignore further triggers.
-        if (hasStuck)
-            return;
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+        }
 
-        // Check if collided with an enemy.
-        if ((((1 << other.gameObject.layer) & enemyLayer) != 0) || (((1 << other.gameObject.layer) & flyingEnemyLayer) != 0))
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
         {
-            EnemyBase enemy = other.GetComponent<EnemyBase>();
-            if (enemy != null)
-            {
-                enemy.Tranquilize(tranquilizeDuration);
-            }
-            Destroy(gameObject);
-            return;
-        }
-        // Check if collided with the ground.
-        else if (((1 << other.gameObject.layer) & groundLayer) != 0)
-        {
-            // Stop movement and disable further physics simulation so the dart sticks.
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-                rb.simulated = false;
-            }
-            // Optionally, disable the collider to prevent further triggers.
-            Collider2D col = GetComponent<Collider2D>();
-            if (col != null)
-            {
-                col.enabled = false;
-            }
-            hasStuck = true;
-            // The dart remains in the scene, "stuck" in the ground.
-            return;
-        }
-        else
-        {
-            // For any other collision, simply destroy the dart.
-            Destroy(gameObject);
+            col.isTrigger = true; // Make it a trigger so enemies don't push it
         }
     }
-    void Explode()
-    {
-        float explosionRadius = 3f; // Adjust radius in Unity Inspector or here
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, explosionRadius, enemyLayer | flyingEnemyLayer);
 
+    void AttractNearbyEnemies()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attractionRadius);
         foreach (Collider2D enemyCollider in enemies)
         {
-            EnemyBase enemy = enemyCollider.GetComponent<EnemyBase>();
+            SimpleEnemy enemy = enemyCollider.GetComponent<SimpleEnemy>();
             if (enemy != null)
             {
-                enemy.Tranquilize(tranquilizeDuration);
+                enemy.target = transform; // Set the coconut as their target
+                enemy.isChasing = true;
+            }
+        }
+    }
+
+    IEnumerator HandleCoconutLifecycle()
+    {
+        yield return new WaitForSeconds(attractionDuration);
+
+        // Reset enemies' targets
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attractionRadius);
+        foreach (Collider2D enemyCollider in enemies)
+        {
+            SimpleEnemy enemy = enemyCollider.GetComponent<SimpleEnemy>();
+            if (enemy != null)
+            {
+                enemy.target = null; // Reset target
+                enemy.isChasing = false; // Stop chasing
+
+                // Reset movement values to ensure patrol resumes
+                enemy.lostSightTimer = 0f;
+                enemy.attackTimer = enemy.attackCooldown; // Reset attack timer
+                enemy.rb.linearVelocity = Vector2.zero; // Stop movement briefly
+
+                // Manually call patrol method to ensure they start moving again
+                enemy.Patrol();
             }
         }
 
-        Destroy(gameObject); // Destroy after explosion
+        // Destroy the coconut after the effect duration
+        Destroy(gameObject);
     }
-
 }

@@ -9,7 +9,7 @@ public abstract class EnemyBase : MonoBehaviour
     public int damage = 10;
 
     protected Animator anim;
-    protected Rigidbody2D rb;
+    public Rigidbody2D rb;
     
     // New flag to track tranquilization status.
     protected bool isTranquilized = false;
