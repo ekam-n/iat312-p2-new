@@ -6,18 +6,18 @@ public class SimpleEnemy : EnemyBase
     [Header("Patrol Settings")]
     public float patrolRange = 5f;    // Half the patrol width.
     protected Vector3 initialPosition;
-    protected int patrolDirection = 1;  // 1 = moving right, -1 = moving left.
+    public int patrolDirection = 1;  // 1 = moving right, -1 = moving left.
 
     [Header("Vision Settings")]
     public float visionRange = 10f;   // Maximum distance at which the enemy can see the player.
     public float visionAngle = 45f;   // Half-angle of the vision cone (in degrees).
-    protected bool isChasing = false;   // Whether the enemy has detected the player.
+    public bool isChasing = false;   // Whether the enemy has detected the player.
     public float lostSightTimeThreshold = 3f; // Time enemy will chase without seeing the player before giving up.
-    protected float lostSightTimer = 0f;         // Timer for how long the enemy hasn't seen the player.
+    public float lostSightTimer = 0f;         // Timer for how long the enemy hasn't seen the player.
 
     [Header("Attack Settings")]
     public float attackCooldown = 2f; // Time between consecutive attacks when colliding.
-    protected float attackTimer = 0f;
+    public float attackTimer = 0f;
     protected PlayerHealth collidedPlayerHealth;
 
     [Header("Target")]
