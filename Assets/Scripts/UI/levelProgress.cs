@@ -1,16 +1,19 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class levelProgress : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public float maxProgress = 100f;    
+    public float currentProgress;
+    public Image progressBar;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        progressBar.fillAmount = Mathf.Clamp(currentProgress / maxProgress, 0, 1);
+    }
+    public void progressTracker(float a)
+    {
+        currentProgress = a;
     }
 }
