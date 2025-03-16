@@ -1,80 +1,98 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+
 
 public class RespawnerHandler : MonoBehaviour
 {
-    public Button respawnButton;               // Reference to the respawn button
-    public PlayerHealth playerHealth;          // Reference to PlayerHealth (for health reset)
-    public PlayerWeaponSwitcher playerWeaponSwitcher;  // Reference to PlayerWeaponSwitcher (for fireball ammo reset)
-    public BlowDartWeapon blowDartWeapon;      // Reference to BlowDartWeapon (for dart ammo reset)
-    private TikiAmmoPickup[] ammoPickups;      // Array to store all ammo pickups in the scene
-    private SimpleEnemy[] enemies;             // Array to store all enemies in the scene
+    public Button respawnButton;               
+    public PlayerHealth playerHealth;          
+    public BlowDartWeapon blowDartWeapon;      
+    private TikiAmmoPickup[] ammoPickups;      
+    private AmmoPickup[] molotovPickups;       
+    private AmmoPickup[] coconutPickups;       
+    private SimpleEnemy[] enemies;             
+    private Vector3[] molotovPickupPositions;  
+    private Vector3[] coconutPickupPositions;  
+    public throwingController playerThrowingController; 
 
     void Start()
     {
-        // Ensure respawnButton is assigned
         if (respawnButton != null)
         {
-            respawnButton.onClick.AddListener(OnRespawnButtonClicked); // Add listener for button press
+            respawnButton.onClick.AddListener(OnRespawnButtonClicked);
         }
         else
         {
             Debug.LogError("Respawn Button is not assigned!");
         }
 
-        // Find all TikiAmmoPickup objects in the scene
+        // Find all ammo pickups
         ammoPickups = FindObjectsOfType<TikiAmmoPickup>();
 
-        // Find all SimpleEnemy objects in the scene
+        // Find all Molotov and Coconut pickups separately
+        molotovPickups = FindObjectsOfType<AmmoPickup>().Where(p => p.ammoType == AmmoPickup.AmmoType.Molotov).ToArray();
+        coconutPickups = FindObjectsOfType<AmmoPickup>().Where(p => p.ammoType == AmmoPickup.AmmoType.Coconut).ToArray();
+
+        // Store original positions
+        molotovPickupPositions = molotovPickups.Select(p => p.transform.position).ToArray();
+        coconutPickupPositions = coconutPickups.Select(p => p.transform.position).ToArray();
+
+        // Find all enemies
         enemies = FindObjectsOfType<SimpleEnemy>();
     }
 
-    // Called when the respawn button is clicked
     private void OnRespawnButtonClicked()
     {
         if (playerHealth != null)
         {
-            playerHealth.Respawn();  // Handle health respawn (position reset, health restore, etc.)
-            
-            // Reset fireball ammo
-            if (playerWeaponSwitcher != null)
-            {
-                playerWeaponSwitcher.ResetAmmo();  // Reset all fireball ammo to 0
-            }
+            playerHealth.Respawn();
 
-            // Reset blowdart ammo
             if (blowDartWeapon != null)
             {
-                blowDartWeapon.ResetAmmo();  // Reset all dart ammo to 0
+                blowDartWeapon.ResetAmmo();
             }
 
-            // Reset all ammo pickups in the scene
             if (ammoPickups != null)
             {
                 foreach (var ammoPickup in ammoPickups)
                 {
-                    ammoPickup.ResetPickup();  // Reset the ammo pickup to its initial position
+                    ammoPickup.ResetPickup();
                 }
             }
 
-            // Reset all enemies' tranquilized status and positions
-            if (enemies != null)
-        {
+            // Reset Molotov Pickups
+            for (int i = 0; i < molotovPickups.Length; i++)
+            {
+                molotovPickups[i].transform.position = molotovPickupPositions[i];
+                molotovPickups[i].gameObject.SetActive(true);
+            }
+
+            // Reset Coconut Pickups
+            for (int i = 0; i < coconutPickups.Length; i++)
+            {
+                coconutPickups[i].transform.position = coconutPickupPositions[i];
+                coconutPickups[i].gameObject.SetActive(true);
+            }
+
+            // Reset Enemies
             foreach (var enemy in enemies)
             {
-        // Check if the enemy object is not null and is not destroyed
-            if (enemy != null && !enemy.gameObject.activeInHierarchy) 
+                if (enemy != null && !enemy.gameObject.activeInHierarchy)
+                {
+                    enemy.gameObject.SetActive(true);
+                }
+                enemy.ResetEnemyStatus();
+                enemy.ResetPosition();
+                enemy.ResetHealth();
+            }
+
+            // Reset Player Ammo
+            if (playerThrowingController != null)
             {
-            // Reactivate the enemy if it's deactivated
-            enemy.gameObject.SetActive(true);
-         }
-        
-        // Reset the enemy's status, position, and health
-            enemy.ResetEnemyStatus();   // Reset tranquilization and other statuses
-             enemy.ResetPosition();      // Reset position to the initial spawn position
-             enemy.ResetHealth();        // Reset health to the default value (e.g., 100)
-        }
-}
+                playerThrowingController.mollyAmmo = 0;  // Reset Molotovs
+                playerThrowingController.cocoAmmo = 0;   // Reset Coconuts
+            }
         }
         else
         {

@@ -6,6 +6,13 @@ public class AmmoPickup : MonoBehaviour
     public AmmoType ammoType;
     public int ammoAmount = 5; // Adjust this per pickup
 
+    private Vector3 initialPosition; // Store the initial position
+
+    private void Start()
+    {
+        initialPosition = transform.position; // Save the spawn position
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         throwingController player = collision.GetComponent<throwingController>();
@@ -21,8 +28,15 @@ public class AmmoPickup : MonoBehaviour
                 player.cocoAmmo = Mathf.Min(player.cocoAmmo + ammoAmount, player.maxCoco);
             }
 
-            // Destroy the pickup object after collection
-            Destroy(gameObject);
+            // Instead of destroying, disable it
+            gameObject.SetActive(false);
         }
+    }
+
+    // Method to reset the ammo pickup
+    public void ResetPickup()
+    {
+        transform.position = initialPosition; // Reset to original position
+        gameObject.SetActive(true); // Reactivate the object
     }
 }
