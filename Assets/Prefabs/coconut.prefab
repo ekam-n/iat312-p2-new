@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c666d895d535e3498ee9c00217822f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attractionRadius: 5
+  attractionRadius: 15
   attractionDuration: 5
   groundLayer:
     serializedVersion: 2

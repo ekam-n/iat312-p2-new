@@ -6,7 +6,7 @@ public class SimpleEnemy : EnemyBase
     [Header("Patrol Settings")]
     public float patrolRange = 5f;    // Half the patrol width.
     protected Vector3 initialPosition;
-    protected int patrolDirection = 1;  // 1 = moving right, -1 = moving left.
+    public int patrolDirection = 1;  // 1 = moving right, -1 = moving left.
 
     [Header("Vision Settings")]
     public float visionRange = 10f;   // Maximum distance at which the enemy can see the player.
