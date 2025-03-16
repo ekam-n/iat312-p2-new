@@ -2,37 +2,31 @@ using UnityEngine;
 
 public class UIAnchorTopLeft : MonoBehaviour
 {
-    public Camera targetCamera; // Assign the main camera
-    private RectTransform rectTransform;
+    // Offset from the top-left anchor.
     public float xVec = 46.5f;
     public float yVec = -6f;
-    public float zVec = 0f;
+
+    private RectTransform rectTransform;
 
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
+        // Ensure that the RectTransform is anchored at the top left.
+        rectTransform.anchorMin = new Vector2(0, 1);
+        rectTransform.anchorMax = new Vector2(0, 1);
+        rectTransform.pivot = new Vector2(0, 1);
+
         UpdatePosition();
     }
 
     void Update()
     {
-        UpdatePosition(); // Call this in Update if window resizing is allowed
+        UpdatePosition(); // Call this in Update if window resizing is allowed.
     }
 
     void UpdatePosition()
     {
-        if (targetCamera == null) return;
-
-        // Get the actual viewport area of the camera
-        Rect camRect = targetCamera.pixelRect;
-
-        // Convert pixel coordinates to UI canvas coordinates
-        Vector2 screenPoint = new Vector2(camRect.xMin, camRect.yMax); // Top-left corner
-        Vector3 worldPoint;
-        RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform.parent as RectTransform, screenPoint, targetCamera, out worldPoint);
-
-        // Apply the new position
-        Vector3 offset = new Vector3(xVec, yVec, zVec); // Adjust X (right) and Y (down)
-        rectTransform.position = worldPoint + offset;
+        // Simply set the anchoredPosition relative to the top left.
+        rectTransform.anchoredPosition = new Vector2(xVec, yVec);
     }
 }
