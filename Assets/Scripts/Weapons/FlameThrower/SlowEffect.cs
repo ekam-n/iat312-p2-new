@@ -15,17 +15,25 @@ public class SlowEffect : MonoBehaviour
     void Awake()
     {
         enemy = GetComponent<EnemyBase>();
+
         if (enemy != null)
         {
             // Save the enemy's original speed and apply the slow.
             originalSpeed = enemy.moveSpeed;
             enemy.moveSpeed *= slowMultiplier;
+            slowCoroutine = StartCoroutine(SlowRoutine());
         }
-        slowCoroutine = StartCoroutine(SlowRoutine());
+        else
+        {
+            Debug.LogError("EnemyBase component not found on " + gameObject.name);
+        }
     }
 
     // Call this to reset the slow duration if the enemy is hit again.
-    public void ResetDuration()
+   public void ResetDuration()
+{
+    // Only start the coroutine if the GameObject is active
+    if (gameObject.activeInHierarchy)
     {
         if (slowCoroutine != null)
         {
@@ -33,6 +41,12 @@ public class SlowEffect : MonoBehaviour
         }
         slowCoroutine = StartCoroutine(SlowRoutine());
     }
+    else
+    {
+        Debug.LogWarning("Cannot start coroutine on an inactive GameObject.");
+    }
+}
+
 
     IEnumerator SlowRoutine()
     {
