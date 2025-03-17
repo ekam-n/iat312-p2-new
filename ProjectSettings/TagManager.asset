@@ -22,7 +22,7 @@ TagManager:
   - FlyingEnemy
   - BossProjectile
   - FlyingBoss
-  - 
+  - Background
   - 
   - 
   - 
@@ -43,8 +43,14 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1595166223
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Boss
+    uniqueID: 350237475
     locked: 0
   m_RenderingLayers:
   - Default
