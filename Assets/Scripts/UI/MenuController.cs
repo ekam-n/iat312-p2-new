@@ -31,7 +31,7 @@ public class MenuController : MonoBehaviour
 
             if (instructionText == null)
             {
-                panel.SetActive(false);  // Start by hiding all comic panels
+                instructionsPanel.SetActive(false);
             }
         }
         else
