@@ -10,7 +10,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected Animator anim;
     public Rigidbody2D rb;
-    
+
     // New flag to track tranquilization status.
     protected bool isTranquilized = false;
 
@@ -31,9 +31,9 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     // Common death behavior.
-    protected virtual void Die()
+    public virtual void Die()
     {
-        Destroy(gameObject);
+         gameObject.SetActive(false);  
     }
 
     // Abstract methods for enemy behavior.
@@ -68,4 +68,21 @@ public abstract class EnemyBase : MonoBehaviour
         }
         isTranquilized = false;
     }
+
+    // Reset the tranquilized status and any other statuses
+    public void ResetEnemyStatus()
+    {
+        isTranquilized = false;
+        if (anim != null)
+        {
+            anim.SetBool("isSleeping", false);
+        }
+        moveSpeed = 10f;  // Reset move speed to normal value (or whatever is default)
+    }
+
+    public virtual void ResetHealth()
+    {
+        health = 100f; // Reset to initial health value, or whatever the default health is.
+    }
+
 }

@@ -1,49 +1,82 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public float maxHealth = 100f;    // Maximum health for the player
-    public float currentHealth;
-    public Image healthBar;
-    private Animator anim;            // Optional: to play damage/death animations
+    public float health = 100f; // Player's starting health
+    public float respawnDelay = 2f;  // Delay before respawning
+    public Vector2 spawnPosition;    // Player's spawn position (2D version)
+    public GameObject respawnButton; // Reference to the Respawn Button in the UI
 
-    void Start()
+    private bool isDead = false;  // Track if the player is dead
+
+    private void Start()
     {
-        currentHealth = maxHealth;
-        anim = GetComponent<Animator>();
+        // Initially set the spawn position to the player's current position at start
+        spawnPosition = transform.position;
+
+        // Ensure the respawn button is hidden initially
+        respawnButton.SetActive(false);
     }
 
-    private void Update()
+    // Method to handle damage
+    public void TakeDamage(float damage)
     {
-        healthBar.fillAmount = Mathf.Clamp(currentHealth / maxHealth, 0, 1);
-    }
+        if (isDead) return;  // If the player is dead, don't apply damage
 
-    // Call this method to apply damage to the player.
-    public void TakeDamage(float damageAmount)
-    {
-        currentHealth -= damageAmount;
-        Debug.Log("Player takes " + damageAmount + " damage. Current health: " + currentHealth);
+        health -= damage; // Subtract the damage from health
 
-        // Optionally, play a damage animation.
-        if (anim != null)
+        if (health <= 0)
         {
-            anim.SetTrigger("Damage");
-        }
-
-        if (currentHealth <= 0)
-        {
-            Die();
-            healthBar.fillAmount = Mathf.Clamp(0 / maxHealth, 0, 1);
+            Die(); // Call the Die method if health drops to zero
         }
     }
 
-    // Handle the player's death.
-    private void Die()
+    // Call this method when the player dies (triggered by the KillTile or other logic)
+    public void Die()
     {
-        Debug.Log("Player died!");
-        // Optionally, play a death animation, disable controls, or reload the scene.
-        // For now, we just destroy the player.
-        Destroy(gameObject);
+        if (!isDead)
+        {
+            isDead = true;
+            // Disable the player object (or apply death animations)
+            gameObject.SetActive(false);
+
+            // Optionally, play a death animation or sound here
+            Debug.Log("Player died!");
+
+            // Make the respawn button visible
+            respawnButton.SetActive(true);
+        }
+    }
+
+    // Respawn the player after a delay
+    public void Respawn()
+    {
+        // Use the CheckpointManager to get the last checkpoint position (2D)
+        transform.position = CheckpointManager.instance.lastCheckpointPosition;
+
+        Debug.Log("Respawning at position: " + CheckpointManager.instance.lastCheckpointPosition);  // Debug log
+
+        // Optionally, re-enable any components (like Animator or RigidBody2D)
+        gameObject.SetActive(true);
+
+        // Reset the player's health
+        health = 100f;  // You can reset this to any starting value
+
+        isDead = false;
+
+        Debug.Log("Player respawned!");
+
+        // Hide the respawn button after the respawn
+        respawnButton.SetActive(false);
+    }
+
+    // Method to update the spawn position when the player reaches a checkpoint
+    public void UpdateSpawnPosition(Vector2 newSpawnPosition)
+    {
+        spawnPosition = newSpawnPosition;
+        Debug.Log("Updated spawn position to: " + newSpawnPosition);  // Debug log
+
+        // Update the last checkpoint position in the CheckpointManager
+        CheckpointManager.instance.UpdateCheckpoint(newSpawnPosition);
     }
 }

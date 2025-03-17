@@ -9,6 +9,7 @@ TagManager:
   - BlowdartPickup
   - NormalDartAmmo
   - PoisonDartAmmo
+  - Enemy
   layers:
   - Default
   - TransparentFX

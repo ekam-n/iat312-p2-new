@@ -47,6 +47,16 @@ public class SimpleEnemy : EnemyBase
         lostSightTimer = 0f;
     }
 
+    public void ResetPosition()
+    {
+        transform.position = initialPosition;  // Reset to the original position
+        patrolDirection = 1;  // Optionally reset patrol direction or any other state
+        isChasing = false;    // Reset chasing state
+        lostSightTimer = 0f; 
+        isTranquilized = false; // Reset lost sight timer
+    }
+
+
     void Update()
     {
         // Toggle vision cone display when V is pressed.
@@ -261,4 +271,6 @@ public class SimpleEnemy : EnemyBase
             }
         }
     }
+
+
 }

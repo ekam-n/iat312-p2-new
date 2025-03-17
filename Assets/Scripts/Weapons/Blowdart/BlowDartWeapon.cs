@@ -1,19 +1,22 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class BlowDartWeapon : Weapon
 {
-    public GameObject dartPrefab;         // Assign your dart projectile prefab in the Inspector.
-    public GameObject poisonDartPrefab;
+    public GameObject dartPrefab;         // Normal dart prefab
+    public GameObject poisonDartPrefab;   // Poison dart prefab
     public Transform shootPoint;          // The point where the dart is spawned.
-    public float dartSpeed = 15f;           // Speed of the dart projectile.
+    public float dartSpeed = 15f;         // Speed of the dart projectile.
     public Transform playerTransform;     // Reference to the player's transform.
+    public float gravityScale = 1f;       // Gravity scale to affect the dart trajectory
 
     private Vector3 originalShootPointLocalPos;  // To store the original shootPoint local position.
     private SpriteRenderer sr;                   // Weapon's SpriteRenderer reference.
 
-    private int normalDartAmmo = 0;      // Track normal dart ammo
-    private int poisonDartAmmo = 0;      // Track poison dart ammo
+    public int normalDartAmmo = 0;      // Track normal dart ammo
+    public int poisonDartAmmo = 0;      // Track poison dart ammo
+
+    public int startingNormalDarts = 10; // Set your starting normal dart ammo here
+    public int startingPoisonDarts = 5;  // Set your starting poison dart ammo here
 
     public override void OnEquip()
     {
@@ -32,116 +35,61 @@ public class BlowDartWeapon : Weapon
 
     public override void HandleInput()
     {
-        // Rotate the weapon toward the mouse.
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 weaponPos = transform.position;
-        float angle = Mathf.Atan2(mousePos.y - weaponPos.y, mousePos.x - weaponPos.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-
-        // Determine if the mouse is to the left of the player.
-        bool flipVertically = false;
-        if (playerTransform != null)
-        {
-            if (mousePos.x < playerTransform.position.x)
-                flipVertically = true;
-        }
-        else if (transform.parent != null)
-        {
-            if (mousePos.x < transform.parent.position.x)
-                flipVertically = true;
-        }
-        
-        // Flip the weapon's sprite vertically based on the condition.
-        if (sr != null)
-        {
-            sr.flipY = flipVertically;
-        }
-
-        // Adjust the shootPoint's local position so the dart spawns from the correct side.
-        if (shootPoint != null)
-        {
-            if (flipVertically)
-                shootPoint.localPosition = new Vector3(originalShootPointLocalPos.x, -originalShootPointLocalPos.y, originalShootPointLocalPos.z);
-            else
-                shootPoint.localPosition = originalShootPointLocalPos;
-        }
-
-        // Fire a normal dart when left mouse button is pressed (if ammo is available)
+        // Shooting normal dart on left click
         if (Input.GetMouseButtonDown(0) && normalDartAmmo > 0)
         {
-            ShootDart();
-            normalDartAmmo--;
-            Debug.Log("Normal dart fired. Remaining: " + normalDartAmmo);
-        }
-        else if (Input.GetMouseButtonDown(0) && normalDartAmmo <= 0)
-        {
-            Debug.Log("Out of normal darts!");
+            ShootDart(false); // False for normal dart
         }
 
-        // Fire a poison dart when right mouse button is pressed (if ammo is available)
+        // Shooting poison dart on right click
         if (Input.GetMouseButtonDown(1) && poisonDartAmmo > 0)
         {
-            ShootPoisonDart();
+            ShootDart(true);  // True for poison dart
+        }
+    }
+
+    public void ShootDart(bool isPoison)
+    {
+        Debug.Log("Attempting to shoot dart...");  // Debug log added
+        GameObject dartToShoot = isPoison ? poisonDartPrefab : dartPrefab;
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0; // Set z to 0 since we're working in 2D
+
+        // Get direction towards mouse
+        Vector3 shootDirection = (mousePosition - shootPoint.position).normalized;
+
+        // Instantiate the dart and set it on its way
+        GameObject dart = Instantiate(dartToShoot, shootPoint.position, Quaternion.identity);
+        Rigidbody2D rb = dart.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = shootDirection * dartSpeed;
+            rb.gravityScale = gravityScale; // Apply gravity to the dart
+        }
+
+        // Update ammo count
+        if (isPoison)
             poisonDartAmmo--;
-            Debug.Log("Poison dart fired. Remaining: " + poisonDartAmmo);
-        }
-        else if (Input.GetMouseButtonDown(1) && poisonDartAmmo <= 0)
-        {
-            Debug.Log("Out of poison darts!");
-        }
+        else
+            normalDartAmmo--;
+
+        Debug.Log($"Normal Darts Left: {normalDartAmmo} | Poison Darts Left: {poisonDartAmmo}");
     }
 
-    void ShootDart()
-    {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
-        float dartAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        // Instantiate the dart with rotation so its forward direction aligns with the shot.
-        GameObject dart = Instantiate(dartPrefab, shootPoint.position, Quaternion.Euler(0, 0, dartAngle));
-        Rigidbody2D rb = dart.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            rb.linearVelocity = direction * dartSpeed;
-        }
-    }
-
-    void ShootPoisonDart()
-    {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = (mousePos - (Vector2)shootPoint.position).normalized;
-        float dartAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        // Instantiate the dart with rotation so its forward direction aligns with the shot.
-        GameObject dart = Instantiate(poisonDartPrefab, shootPoint.position, Quaternion.Euler(0, 0, dartAngle));
-        Rigidbody2D rb = dart.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            rb.linearVelocity = direction * dartSpeed;
-        }
-    }
-
-    // Method to add normal dart ammo
     public void AddNormalDarts(int amount)
     {
-        normalDartAmmo += amount;
-        Debug.Log("Added " + amount + " normal darts. Total: " + normalDartAmmo);
+        normalDartAmmo = Mathf.Min(normalDartAmmo + amount, startingNormalDarts);
     }
 
-    // Method to add poison dart ammo
     public void AddPoisonDarts(int amount)
     {
-        poisonDartAmmo += amount;
-        Debug.Log("Added " + amount + " poison darts. Total: " + poisonDartAmmo);
+        poisonDartAmmo = Mathf.Min(poisonDartAmmo + amount, startingPoisonDarts);
     }
 
-    // Method to get current normal dart ammo count
-    public int GetNormalDartAmmo()
+    // New method to reset ammo
+    public void ResetAmmo()
     {
-        return normalDartAmmo;
-    }
-
-    // Method to get current poison dart ammo count
-    public int GetPoisonDartAmmo()
-    {
-        return poisonDartAmmo;
+        normalDartAmmo = 0; // Reset to starting normal darts amount
+        poisonDartAmmo = 0; // Reset to starting poison darts amount
     }
 }

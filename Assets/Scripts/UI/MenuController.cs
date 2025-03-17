@@ -21,7 +21,6 @@ public class MenuController : MonoBehaviour
         // Check if instructionText is not assigned
         if (instructionText == null)
         {
-            // Attempt to find the instructionText by name, but make sure it's not destroyed first
             instructionText = GameObject.Find("InstructionText")?.GetComponent<TextMeshProUGUI>();
 
             if (instructionText == null)
@@ -42,8 +41,6 @@ public class MenuController : MonoBehaviour
         {
             Debug.LogError("Instructions Panel is missing!");
         }
-
-    
     }
 
     public void CloseInstructions()
