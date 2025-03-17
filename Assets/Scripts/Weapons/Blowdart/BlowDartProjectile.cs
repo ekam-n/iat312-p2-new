@@ -4,8 +4,10 @@ public class BlowDartProjectile : MonoBehaviour
 {
     public float tranquilizeDuration = 15f;  // Duration the enemy stays asleep.
     public LayerMask enemyLayer;             // Set in the Inspector to the enemy layer.
-    public LayerMask flyingEnemyLayer;             // Set in the Inspector to the flyingEnemy layer.
+    public LayerMask flyingEnemyLayer;       // Set in the Inspector to the flyingEnemy layer.
     public LayerMask groundLayer;            // Set in the Inspector to the ground layer.
+    public LayerMask bossProjectileLayer;    // Set in the Inspector to the FlyingBoss projectile layer.
+    
     private Rigidbody2D rb;
     private bool hasStuck = false;           // Flag to indicate if the dart has stuck to the ground.
 
@@ -49,6 +51,14 @@ public class BlowDartProjectile : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        // Check for collision with FlyingBoss projectiles.
+        else if (((1 << other.gameObject.layer) & bossProjectileLayer) != 0)
+        {
+            // Optionally, destroy the boss projectile as well.
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+            return;
+        }
         // Check for ground collision.
         else if (((1 << other.gameObject.layer) & groundLayer) != 0)
         {
@@ -67,12 +77,8 @@ public class BlowDartProjectile : MonoBehaviour
         }
         else
         {
-            // For any other collision, decide whether you want to ignore it or destroy the dart.
-            // For example, you might log the collision and do nothing:
+            // For any other collision, decide whether to ignore it or log it.
             Debug.Log("Dart collided with " + other.gameObject.name + " (ignored)");
-            // Or, if you really want to destroy it, leave it as is:
-            // Destroy(gameObject);
         }
     }
-
 }

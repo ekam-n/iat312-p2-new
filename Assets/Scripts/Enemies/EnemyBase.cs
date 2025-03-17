@@ -48,7 +48,12 @@ public abstract class EnemyBase : MonoBehaviour
     // Tranquilize the enemy (puts it to sleep).
     public virtual void Tranquilize(float duration)
     {
+        // Option 2: Reset the timer on new hits.
+        StopAllCoroutines();
         StartCoroutine(TranquilizeRoutine(duration));
+        // Option 1 alternative:
+        // if (isTranquilized) return;
+        // StartCoroutine(TranquilizeRoutine(duration));
     }
 
     private IEnumerator TranquilizeRoutine(float duration)
@@ -58,14 +63,15 @@ public abstract class EnemyBase : MonoBehaviour
         {
             anim.SetBool("isSleeping", true);
         }
-
-        // Disable movement while tranquilized.
+        
+        // Store the current moveSpeed so we can restore it later.
         float originalSpeed = moveSpeed;
         moveSpeed = 0;
-
+        
+        // Wait for the duration
         yield return new WaitForSeconds(duration);
-
-        // Restore movement and mark enemy as awake.
+        
+        // Restore the original speed and state.
         moveSpeed = originalSpeed;
         if (anim != null)
         {
@@ -73,6 +79,7 @@ public abstract class EnemyBase : MonoBehaviour
         }
         isTranquilized = false;
     }
+
 
     // Reset the tranquilized status and any other statuses
     public void ResetEnemyStatus()
