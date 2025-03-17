@@ -33,7 +33,12 @@ public abstract class EnemyBase : MonoBehaviour
     // Common death behavior.
     public virtual void Die()
     {
-         gameObject.SetActive(false);  
+        PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.IncrementKillCount();
+        }
+        gameObject.SetActive(false);  
     }
 
     // Abstract methods for enemy behavior.
