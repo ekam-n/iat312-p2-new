@@ -33,6 +33,8 @@ public class SimpleEnemy : EnemyBase
     // Debug: toggle drawing the vision cone.
     protected bool showVisionCone = false;
 
+    private EnemyDoor enemyDoor;
+
     protected override void Awake()
     {
         base.Awake();
@@ -270,6 +272,30 @@ public class SimpleEnemy : EnemyBase
                 previousPoint = nextPoint;
             }
         }
+    }
+
+    public override void Die()
+    {
+        PlayerHealth playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.IncrementKillCount();
+        }
+
+        // Set the enemy GameObject to null in the requiredEnemies array
+        if (enemyDoor != null)
+        {
+            for (int i = 0; i < enemyDoor.requiredEnemies.Length; i++)
+            {
+                if (enemyDoor.requiredEnemies[i] == gameObject)
+                {
+                    enemyDoor.requiredEnemies[i] = null;
+                    break;
+                }
+            }
+        }
+
+        Destroy(gameObject);
     }
 
 
