@@ -54,12 +54,12 @@ MonoBehaviour:
   flyingEnemyLayer:
     serializedVersion: 2
     m_Bits: 512
+  bossEnemyLayer:
+    serializedVersion: 2
+    m_Bits: 2048
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  bossProjectileLayer:
-    serializedVersion: 2
-    m_Bits: 2048
 --- !u!212 &1356033172002995683
 SpriteRenderer:
   m_ObjectHideFlags: 0
