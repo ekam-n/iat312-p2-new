@@ -7,6 +7,9 @@ public class PlayerHealth : MonoBehaviour
     public Vector2 spawnPosition;    // Player's spawn position (2D version)
     public GameObject respawnButton; // Reference to the Respawn Button in the UI
 
+    public float currentHealth;
+    public float maxHealth;
+
     private bool isDead = false;  // Track if the player is dead
 
     private void Start()
