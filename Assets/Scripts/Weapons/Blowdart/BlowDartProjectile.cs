@@ -30,11 +30,15 @@ public class BlowDartProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // If we already stuck to the ground, ignore further triggers.
+        // If we've already stuck, do nothing.
         if (hasStuck)
             return;
 
-        // Check if collided with an enemy.
+        // Optional: Ignore collisions with the player if necessary.
+        if (other.CompareTag("Player"))
+            return;
+
+        // Check for enemy collision.
         if ((((1 << other.gameObject.layer) & enemyLayer) != 0) || (((1 << other.gameObject.layer) & flyingEnemyLayer) != 0))
         {
             EnemyBase enemy = other.GetComponent<EnemyBase>();
@@ -45,29 +49,30 @@ public class BlowDartProjectile : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        // Check if collided with the ground.
+        // Check for ground collision.
         else if (((1 << other.gameObject.layer) & groundLayer) != 0)
         {
-            // Stop movement and disable further physics simulation so the dart sticks.
             if (rb != null)
             {
                 rb.linearVelocity = Vector2.zero;
                 rb.simulated = false;
             }
-            // Optionally, disable the collider to prevent further triggers.
             Collider2D col = GetComponent<Collider2D>();
             if (col != null)
             {
                 col.enabled = false;
             }
             hasStuck = true;
-            // The dart remains in the scene, "stuck" in the ground.
             return;
         }
         else
         {
-            // For any other collision, simply destroy the dart.
-            Destroy(gameObject);
+            // For any other collision, decide whether you want to ignore it or destroy the dart.
+            // For example, you might log the collision and do nothing:
+            Debug.Log("Dart collided with " + other.gameObject.name + " (ignored)");
+            // Or, if you really want to destroy it, leave it as is:
+            // Destroy(gameObject);
         }
     }
+
 }
