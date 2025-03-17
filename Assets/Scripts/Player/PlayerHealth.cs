@@ -63,24 +63,24 @@ public class PlayerHealth : MonoBehaviour
     // Respawn the player after a delay
     public void Respawn()
     {
-        // Use the CheckpointManager to get the last checkpoint position (2D)
-        transform.position = CheckpointManager.instance.lastCheckpointPosition;
+        Vector2 respawnPos = CheckpointManager.instance.lastCheckpointPosition;
+        // If lastCheckpointPosition is uninitialized (e.g. Vector2.zero) and that’s not a valid checkpoint,
+        // fall back to the player's initial spawn position.
+        if(respawnPos == Vector2.zero)
+        {
+            respawnPos = spawnPosition;
+        }
+        
+        transform.position = respawnPos;
+        Debug.Log("Respawning at position: " + respawnPos);
 
-        Debug.Log("Respawning at position: " + CheckpointManager.instance.lastCheckpointPosition);  // Debug log
-
-        // Optionally, re-enable any components (like Animator or RigidBody2D)
+        // Re-enable components and reset health...
         gameObject.SetActive(true);
-
-        // Reset the player's health
-        health = 100f;  // You can reset this to any starting value
-
+        health = 100f;
         isDead = false;
-
-        Debug.Log("Player respawned!");
-
-        // Hide the respawn button after the respawn
         respawnButton.SetActive(false);
     }
+
 
     // Method to update the spawn position when the player reaches a checkpoint
     public void UpdateSpawnPosition(Vector2 newSpawnPosition)
