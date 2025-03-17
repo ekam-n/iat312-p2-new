@@ -5,7 +5,7 @@ public class BlowDartWeapon : Weapon
     public GameObject dartPrefab;         // Normal dart prefab
     public GameObject poisonDartPrefab;   // Poison dart prefab
     public Transform shootPoint;          // The point where the dart is spawned.
-    public float dartSpeed = 15f;         // Speed of the dart projectile.
+    public float dartSpeed = 50f;         // Speed of the dart projectile.
     public Transform playerTransform;     // Reference to the player's transform.
     public float gravityScale = 1f;       // Gravity scale to affect the dart trajectory
 
